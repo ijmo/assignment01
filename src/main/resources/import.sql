@@ -1,0 +1,1 @@
+INSERT INTO user (id, username, password, created_on) values (1, 'testuser', '1234', CURRENT_TIMESTAMP());
