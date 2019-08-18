@@ -21,7 +21,7 @@ trait AssistanceInfoRepository extends JpaRepository[AssistanceInfo, java.lang.L
   @Query(value = "SELECT organization_code code, SQRT(POWER(longitude - :x, 2) + POWER(latitude - :y, 2)) distance " +
                    "FROM assistance_info " +
                   "WHERE (longitude IS NOT NULL OR latitude IS NOT NULL) AND usages LIKE  %:usages% " +
-                    "AND max_amount_num <= :maxAmount AND rate1 <= :rateLimit ORDER BY distance ASC LIMIT 1"
+                    "AND (CASE WHEN max_amount_num >= 9000000000000000000 THEN 0 ELSE max_amount_num END) <= :maxAmount AND rate1 <= :rateLimit ORDER BY distance ASC LIMIT 1"
     , nativeQuery = true)
   def findByXAndYAndUsagesAndMaxAmountAndRateLimit(x: Double, y: Double, usages: String, maxAmount: Long, rateLimit: Double): Array[Object]
 
