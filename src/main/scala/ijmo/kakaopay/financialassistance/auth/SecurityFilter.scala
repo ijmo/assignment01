@@ -1,10 +1,9 @@
 package ijmo.kakaopay.financialassistance.auth
 
-import ijmo.kakaopay.financialassistance.system.AppConfiguration
+import ijmo.kakaopay.financialassistance.system.SecurityConfig
 import io.jsonwebtoken.Jwts
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.servlet.{Filter, FilterChain, ServletRequest, ServletResponse}
-
 
 object SecurityFilter {
   val excludedUris = "/api/signup,/api/login"
@@ -24,20 +23,15 @@ class SecurityFilter extends Filter {
 
     try {
       val token: String = httpServletRequest.getHeader("Authorization")
-      val jwt = if (token != null && token.startsWith("Bearer ")) token.drop(7) else throw new Exception("Unauthorized")
-      val jws = Jwts.parser().setSigningKey(AppConfiguration.MY_SECRET_KEY).parseClaimsJws(jwt)
+      val jwt = if (token != null && token.toLowerCase.startsWith("bearer ")) token.drop(7) else throw new Exception("Unauthorized")
+      val jws = Jwts.parser().setSigningKey(SecurityConfig.MY_SECRET_KEY).parseClaimsJws(jwt)
     } catch {
-      case e: Throwable => {
+      case e: Throwable =>
         println(e.getMessage)
         httpServletResponse.reset()
         httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
         return
-      }
     }
     chain.doFilter(request, response)
   }
-
-//  def resolveToken(request: HttpServletRequest): String = {
-//    val bearerToken: String = request.getHeader(SecurityConfiguration.)
-//  }
 }

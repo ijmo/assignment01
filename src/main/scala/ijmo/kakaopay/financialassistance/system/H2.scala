@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class H2 {
-//  @Profile(Array("test")) // <-- up to you class H2 { private var webServer: Server = null
   private var server: Server = _
   private var webServer: Server = _
 

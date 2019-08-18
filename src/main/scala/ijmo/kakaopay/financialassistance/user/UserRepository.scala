@@ -4,6 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 
 trait UserRepository extends JpaRepository[User, Long] {
-  def findByUsername(username: String): User
-  def findByUsernameAndPassword(username: String, password: String): Option[User]
+  def findByUsername(username: String): Option[User]
 }

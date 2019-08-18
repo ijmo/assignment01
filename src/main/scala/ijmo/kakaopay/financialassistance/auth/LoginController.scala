@@ -1,8 +1,8 @@
 package ijmo.kakaopay.financialassistance.auth
 
-import ijmo.kakaopay.financialassistance.system.AppConfiguration
+import ijmo.kakaopay.financialassistance.system.{AppConfig, SecurityConfig}
 import ijmo.kakaopay.financialassistance.user.{User, UserService}
-import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.{Claims, Jws, Jwt, Jwts}
 import javax.validation.Valid
 import org.springframework.http.{HttpStatus, ResponseEntity}
 import org.springframework.web.bind.annotation._
@@ -27,16 +27,24 @@ class LoginController (val loginService: LoginService,
     }
     val user = userService.addUser(User(u.username, u.password))
     if (user == null) return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
-    new ResponseEntity(HttpStatus.OK)
+    new ResponseEntity(HttpStatus.CREATED)
   }
 
   @PostMapping(Array("/refresh"))
   def refresh(@RequestHeader("Authorization") authorization: String): ResponseEntity[Object] = {
-    val jwt = authorization.drop(7)
-    val jws = Jwts.parser().setSigningKey(AppConfiguration.MY_SECRET_KEY).parseClaimsJws(jwt).getBody
-    val username = jws.getSubject
+    val jwt = if (authorization.toLowerCase.startsWith("bearer ")) authorization.drop(7) else
+      return new ResponseEntity(HttpStatus.UNAUTHORIZED)
+    var jws: Jws[Claims] = null
+    try {
+      jws = Jwts.parser().setSigningKey(SecurityConfig.MY_SECRET_KEY).parseClaimsJws(jwt)
+    } catch {
+      case _: Throwable =>
+        return new ResponseEntity(HttpStatus.UNAUTHORIZED)
+    }
+    val username = jws.getBody.getSubject
     val user = userService.findByUsername(username)
-    val token = loginService.createToken(user.username)
+    if (user.isEmpty) new ResponseEntity(HttpStatus.UNAUTHORIZED)
+    val token = loginService.createToken(user.get.username)
     new ResponseEntity(token, HttpStatus.OK)
   }
 }
