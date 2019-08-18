@@ -39,9 +39,9 @@ $ sbt test
 ## HTTP API
 | Method | Path | Description |
 |---|---|---|
-| POST | /api/signup | 회원가입 (필드: 'username', 'password') <br> e.g. {"username": "newuser", "password": "secret"} |
-| POST | /api/signin | 로그인 (필드: 'username', 'password') <br>기본 계정: {"username": "testuser", "password": "1234"} |
-| POST | /api/refresh | 토큰 재발급. Authorization 헤더에 토큰이 필요합니다. |
+| POST | /api/signup | 회원가입 (필드: 'username', 'password') <br> e.g. {"username": "newuser", "password": "secret"}<br>성공시 - 201 |
+| POST | /api/signin | 로그인 (Auth 방식: HTTP Basic)<br>기본 계정: testuser / 1234<br>성공시 - 200 |
+| POST | /api/refresh | 토큰 재발급. Authorization 헤더에 토큰이 필요합니다.<br>성공시 - 200 |
 | GET | /api/assistanceinfo | 지원 정보 목록을 조회합니다. |
 | POST | /api/assistanceinfo | 지원 정보를 1건 등록합니다. |
 | PUT | /api/assistanceinfo/:id | 지원 정보를 1건 수정합니다. |
