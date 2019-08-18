@@ -21,7 +21,7 @@ class User private (aUsername: String,
   }
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @BeanProperty
   val id: Long = 0L
 
