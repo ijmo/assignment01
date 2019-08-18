@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation._
 class LoginController (val loginService: LoginService,
                        val userService: UserService) {
 
-  @PostMapping(Array("/login"))
+  @PostMapping(Array("/signin"))
   def login(@Valid @RequestBody u: User): ResponseEntity[Object] = {
     val user = userService.findByUsernameAndPassword(u.username, u.password).orNull
     if (user == null) return new ResponseEntity(HttpStatus.UNAUTHORIZED)

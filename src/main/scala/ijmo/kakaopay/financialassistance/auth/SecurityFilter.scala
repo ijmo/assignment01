@@ -6,7 +6,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.servlet.{Filter, FilterChain, ServletRequest, ServletResponse}
 
 object SecurityFilter {
-  val excludedUris = "/api/signup,/api/login"
+  val excludedUris = "/api/signup,/api/signin"
 }
 
 class SecurityFilter extends Filter {
