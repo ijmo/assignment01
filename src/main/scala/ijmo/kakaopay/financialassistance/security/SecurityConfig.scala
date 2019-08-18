@@ -28,9 +28,10 @@ class SecurityConfig (val userService: UserService) extends WebSecurityConfigure
 
   override def configure(http: HttpSecurity): Unit = {
     http.authorizeRequests()
-      .antMatchers("/api/signin", "/api/signup", "/api/refresh").permitAll()
+      .antMatchers("/api/signup", "/api/refresh").permitAll()
       .antMatchers("/api/assistanceinfo/**").permitAll()
       .anyRequest().authenticated()
+      .and().httpBasic()
       .and().csrf().disable()
   }
 

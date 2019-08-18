@@ -1,10 +1,11 @@
 package ijmo.kakaopay.financialassistance.auth
 
-import ijmo.kakaopay.financialassistance.system.{AppConfig, SecurityConfig}
-import ijmo.kakaopay.financialassistance.user.{User, UserService}
-import io.jsonwebtoken.{Claims, Jws, Jwt, Jwts}
+import ijmo.kakaopay.financialassistance.system.SecurityConfig
+import ijmo.kakaopay.financialassistance.user.{User, UserPrincipal, UserService}
+import io.jsonwebtoken.{Claims, Jws, Jwts}
 import javax.validation.Valid
 import org.springframework.http.{HttpStatus, ResponseEntity}
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation._
 
 @RestController
@@ -13,10 +14,8 @@ class LoginController (val loginService: LoginService,
                        val userService: UserService) {
 
   @PostMapping(Array("/signin"))
-  def login(@Valid @RequestBody u: User): ResponseEntity[Object] = {
-    val user = userService.findByUsernameAndPassword(u.username, u.password).orNull
-    if (user == null) return new ResponseEntity(HttpStatus.UNAUTHORIZED)
-    val token = loginService.createToken(user.username)
+  def signin(@AuthenticationPrincipal u: UserPrincipal): ResponseEntity[Object] = {
+    val token = loginService.createToken(u.getUsername)
     new ResponseEntity(token, HttpStatus.OK)
   }
 
