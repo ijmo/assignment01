@@ -1,1 +1,2 @@
-INSERT INTO user (id, username, password, authorities, created_on) values (1, 'testuser', '{noop}1234', 'ROLE_USER', CURRENT_TIMESTAMP());
+INSERT INTO user (id, username, password, authorities, created_on) values (1, 'admin', '{noop}admin', 'ROLE_USER,ROLE_ADMIN', CURRENT_TIMESTAMP());
+INSERT INTO user (id, username, password, authorities, created_on) values (2, 'user', '{noop}1234', 'ROLE_USER', CURRENT_TIMESTAMP());
