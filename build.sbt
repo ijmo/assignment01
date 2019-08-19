@@ -13,6 +13,8 @@ libraryDependencies ++= Seq(
   "org.springframework.boot" % "spring-boot-starter-test" % "2.1.7.RELEASE",
   "org.springframework.boot" % "spring-boot-starter-log4j2" % "2.1.7.RELEASE",
   "org.springframework.boot" % "spring-boot-devtools" % "2.1.7.RELEASE",
+  "org.springframework.security.oauth" % "spring-security-oauth2" % "2.3.6.RELEASE",
+  "org.springframework.security" % "spring-security-jwt" % "1.0.10.RELEASE",
   "org.apache.logging.log4j" % "log4j" % "2.12.1",
   "org.apache.logging.log4j" % "log4j-api" % "2.12.1",
   "org.scalaj" %% "scalaj-http" % "2.4.2",
