@@ -21,7 +21,7 @@ class LoginController (val loginService: LoginService,
 
   @PostMapping(Array("/signup"))
   def signup(@Valid @RequestBody u: User): ResponseEntity[Object] = {
-    if (userService.findByUsernameAndPassword(u.username, u.password).isDefined) {
+    if (userService.findByUsername(u.username).isDefined) {
       return new ResponseEntity(HttpStatus.BAD_REQUEST)
     }
     val user = userService.addUser(User(u.username, u.password))
@@ -31,7 +31,7 @@ class LoginController (val loginService: LoginService,
 
   @PostMapping(Array("/refresh"))
   def refresh(@RequestHeader("Authorization") authorization: String): ResponseEntity[Object] = {
-    val jwt = if (authorization.toLowerCase.startsWith("bearer ")) authorization.drop(7) else
+    val jwt = if (authorization.startsWith("Bearer ")) authorization.drop(7) else
       return new ResponseEntity(HttpStatus.UNAUTHORIZED)
     var jws: Jws[Claims] = null
     try {
