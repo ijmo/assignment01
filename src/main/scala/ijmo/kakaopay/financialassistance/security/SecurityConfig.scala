@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 object SecurityConfig {
   val TOKEN_EXPIRE_TIME: Long = Duration.ofMinutes(30).toMillis
   val MY_SECRET_KEY: String = "mySecretKey"
+  val DEFAULT_CLIENT_ID: String = "financialClientId"
+  val DEFAULT_CLIENT_PW: String = "1111"
 }
 
 @Configuration
@@ -25,18 +27,6 @@ class SecurityConfig (val userService: UserService) extends WebSecurityConfigure
 
   override protected def configure(auth: AuthenticationManagerBuilder): Unit =
     auth.authenticationProvider(authenticationProvider())
-
-//  override def configure(http: HttpSecurity): Unit = {
-//    http
-//      .csrf().disable()
-//      .sessionManagement()
-//      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//      .and().authorizeRequests()
-//      .antMatchers("/api/signup", "/api/refresh").permitAll()
-//      .antMatchers("/api/assistanceinfo/**").permitAll()
-//      .antMatchers("/actuator/**").permitAll()
-//      .and().httpBasic()
-//  }
 
   @Bean
   def passwordEncoder(): PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()

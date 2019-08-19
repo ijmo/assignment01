@@ -21,8 +21,8 @@ class AuthorizationServerConfig (val authenticationManager: AuthenticationManage
 
   override def configure(clients: ClientDetailsServiceConfigurer): Unit = {
     clients.inMemory()
-      .withClient("financialClientId")
-      .secret(passwordEncoder.encode("secret"))
+      .withClient(SecurityConfig.DEFAULT_CLIENT_ID)
+      .secret(passwordEncoder.encode(SecurityConfig.DEFAULT_CLIENT_PW))
       .authorizedGrantTypes("password", "refresh_token")
       .scopes("read", "write", "assistanceInfo")
       .accessTokenValiditySeconds((Duration.ofMinutes(30).toMinutes * 60).asInstanceOf[Int])
