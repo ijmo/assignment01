@@ -2,6 +2,7 @@ package ijmo.kakaopay.financialassistance.user
 
 import java.time.ZonedDateTime
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence._
 import javax.validation.constraints.NotEmpty
 import org.springframework.security.core.GrantedAuthority
@@ -36,6 +37,7 @@ class User private (aUsername: String,
   var password: String = aPassword
 
   @Column(name = "authorities")
+  @JsonIgnore
   var authorities: String = "ROLE_USER"
 
   @Column(name = "created_on")
