@@ -37,11 +37,12 @@ $ sbt test
 
 
 ## Basic API
+
 | Method | Path | Description |
 |---|---|---|
 | POST | /api/signup | 회원가입 (필드: 'username', 'password') <br> e.g. {"username": "newuser", "password": "secret"}<br>성공시 - 201 |
-| POST | /api/signin | 로그인 (Auth 방식: HTTP Basic)<br>기본 계정: user / 1234<br>성공시 - 200 |
-| POST | /api/refresh | 토큰 재발급. Authorization 헤더에 토큰이 필요합니다.<br>성공시 - 200 |
+| POST | /oauth/token | 로그인<br>Basic Auth(Username: financialClientId / Password: 1111)<br>grant_type=password<br>username=newuser<br>password=secret |
+| POST | /oauth/token | 토큰 재발급<br>Basic Auth(Username: financialClientId / Password: 1111)<br>grant_type=refresh_token<br>refresh_token=TOKEN_HERE |
 
 
 ## Resource API
