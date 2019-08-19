@@ -6,13 +6,13 @@ scalaVersion := "2.12.1"
 
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-java8-compat" % "0.9.0",
+  "org.springframework.boot" % "spring-boot-starter-actuator" % "2.1.7.RELEASE",
   "org.springframework.boot" % "spring-boot-starter-web" % "2.1.7.RELEASE",
   "org.springframework.boot" % "spring-boot-starter-data-jpa" % "2.1.7.RELEASE",
   "org.springframework.boot" % "spring-boot-starter-security" % "2.1.7.RELEASE",
-  "org.springframework.boot" % "spring-boot-devtools" % "2.1.7.RELEASE",
   "org.springframework.boot" % "spring-boot-starter-test" % "2.1.7.RELEASE",
-  "org.springframework.boot" % "spring-boot-starter-actuator" % "2.1.7.RELEASE",
   "org.springframework.boot" % "spring-boot-starter-log4j2" % "2.1.7.RELEASE",
+  "org.springframework.boot" % "spring-boot-devtools" % "2.1.7.RELEASE",
   "org.apache.logging.log4j" % "log4j" % "2.12.1",
   "org.apache.logging.log4j" % "log4j-api" % "2.12.1",
   "org.scalaj" %% "scalaj-http" % "2.4.2",
