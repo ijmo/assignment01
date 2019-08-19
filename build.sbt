@@ -25,7 +25,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-json" % "2.7.3",
   "org.hibernate" % "hibernate-validator" % "6.0.17.Final",
   "io.jsonwebtoken" % "jjwt" % "0.9.1",
-  "org.scalatest" %% "scalatest" % "3.1.0-RC1" % Test
+  "org.scalatest" %% "scalatest" % "3.1.0-RC1" % Test,
+  "org.apache.httpcomponents" % "httpclient" % "4.5.9" % Test,
+  "org.springframework.security" % "spring-security-test" % "5.1.6.RELEASE" % Test
 )
 
 excludeDependencies ++= Seq(
