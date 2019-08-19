@@ -1,6 +1,6 @@
 package ijmo.kakaopay.financialassistance
 
-import ijmo.kakaopay.financialassistance.user.User
+import ijmo.kakaopay.financialassistance.security.SecurityConfig
 import org.scalatest.{BeforeAndAfter, BeforeAndAfterAll, FeatureSpec, GivenWhenThen, Matchers}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -14,8 +14,8 @@ trait IntegrationSpec extends FeatureSpec with GivenWhenThen with Matchers with 
   @Autowired
   var testRestTemplate: TestRestTemplate = _
 
-  def basicAuthTemplate(user: User): TestRestTemplate =
-    testRestTemplate.withBasicAuth(user.getUsername, user.getPassword)
+  def basicAuthTemplate: TestRestTemplate =
+    testRestTemplate.withBasicAuth(SecurityConfig.DEFAULT_CLIENT_ID, SecurityConfig.DEFAULT_CLIENT_PW)
 
   def createHttpEntity(body: Any): HttpEntity[Any] = {
     val headers: HttpHeaders = new HttpHeaders()
