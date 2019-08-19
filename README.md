@@ -36,12 +36,20 @@ $ sbt test
 ```
 
 
-## HTTP API
+## Basic API
 | Method | Path | Description |
 |---|---|---|
 | POST | /api/signup | 회원가입 (필드: 'username', 'password') <br> e.g. {"username": "newuser", "password": "secret"}<br>성공시 - 201 |
 | POST | /api/signin | 로그인 (Auth 방식: HTTP Basic)<br>기본 계정: user / 1234<br>성공시 - 200 |
 | POST | /api/refresh | 토큰 재발급. Authorization 헤더에 토큰이 필요합니다.<br>성공시 - 200 |
+
+
+## Resource API
+
+모든 요청에는 Authorization Header에 'Bearer TOKEN' 형식으로 토큰을 포함해야 합니다.
+
+| Method | Path | Description |
+|---|---|---|
 | GET | /api/assistanceinfo | 지원 정보 목록을 조회합니다. |
 | POST | /api/assistanceinfo | 지원 정보를 1건 등록합니다. |
 | PUT | /api/assistanceinfo/:id | 지원 정보를 1건 수정합니다. |
