@@ -4,11 +4,11 @@ import java.time.Duration
 
 import ijmo.kakaopay.financialassistance.user.UserService
 import org.springframework.context.annotation.{Bean, Configuration}
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.{EnableWebSecurity, WebSecurityConfigurerAdapter}
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 
@@ -17,22 +17,23 @@ object SecurityConfig {
   val MY_SECRET_KEY: String = "mySecretKey"
 }
 
-@EnableWebSecurity
 @Configuration
+@EnableWebSecurity
 class SecurityConfig (val userService: UserService) extends WebSecurityConfigurerAdapter {
-  @Bean
-  override def authenticationManagerBean(): AuthenticationManager = super.authenticationManagerBean()
 
   override protected def configure(auth: AuthenticationManagerBuilder): Unit =
     auth.authenticationProvider(authenticationProvider())
 
   override def configure(http: HttpSecurity): Unit = {
-    http.authorizeRequests()
+    http
+      .csrf().disable()
+      .sessionManagement()
+      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      .and().authorizeRequests()
       .antMatchers("/api/signup", "/api/refresh").permitAll()
       .antMatchers("/api/assistanceinfo/**").permitAll()
-      .anyRequest().authenticated()
+      .antMatchers("/actuator/**").permitAll()
       .and().httpBasic()
-      .and().csrf().disable()
   }
 
   @Bean
