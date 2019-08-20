@@ -63,16 +63,24 @@ class AssistanceInfoIntegrationTest extends IntegrationSpec {
   var user: User = _
   var token: String = _
 
-  override def beforeAll(): Unit = {
-    val testUser: User = User("testuser", "1234")
-    testRestTemplate.exchange("/api/signup", HttpMethod.POST, createHttpEntity(testUser), classOf[Any]).getStatusCode shouldBe HttpStatus.CREATED
+  def signUp(user: User): Unit = {
+    testRestTemplate.exchange("/api/signup", HttpMethod.POST, createHttpEntity(user), classOf[Any]).getStatusCode shouldBe HttpStatus.CREATED
+  }
+
+  def getAccessToken(user: User): String = {
     val params = new LinkedMultiValueMap[String, String]()
     params.add("grant_type", "password")
-    params.add("username", testUser.getUsername)
-    params.add("password", testUser.getPassword)
+    params.add("username", user.getUsername)
+    params.add("password", user.getPassword)
     val response = basicAuthTemplate.postForObject("/oauth/token", params, classOf[java.util.Map[String, String]])
     import scala.collection.JavaConverters._
-    token = response.asScala("access_token")
+    response.asScala("access_token")
+  }
+
+  override def beforeAll(): Unit = {
+    val testUser: User = User("testuser", "1234")
+    signUp(testUser)
+    token = getAccessToken(testUser)
   }
 
   feature("AssistanceInfoController") {
