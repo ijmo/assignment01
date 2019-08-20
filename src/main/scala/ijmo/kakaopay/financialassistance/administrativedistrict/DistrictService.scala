@@ -23,11 +23,11 @@ class DistrictService {
     districts
   }
 
-  def findDistrictsByName(name: String): District = {
-    val (placeName, _) = District.getPlaceNameAndAreaUnit(name)
-    val districts = findDistrictsByPlaceName(placeName)
-    districts.find(_.name == name).orNull
-  }
+//  def findDistrictsByName(name: String): List[District] = {
+//    val (placeName, _) = District.getPlaceNameAndAreaUnit(name)
+//    val districts = findDistrictsByPlaceName(placeName)
+//    districts.find(_.name == name).orNull
+//  }
 
   def findDistrictsByPlaceName(placeName: String): List[District] = DistrictRepository.getPlaceNameDistrictMap.getOrElse(placeName, Nil)
 
@@ -38,9 +38,4 @@ class DistrictService {
   def findAllDistrictsIn(text: String): List[District] = {
     findAllIterable().filter(_.various.exists(text.contains)).toList
   }
-
-
-//  def findDistrictExactly(names: List[String]): District = {
-//
-//  }
 }
