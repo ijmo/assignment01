@@ -10,7 +10,7 @@ object Numbers {
     "천" -> "000",
     "만" -> "0000",
     "억" -> "00000000")
-  //  numericUnits.foldLeft("6억")((acc, item) => acc.replace(item._1, item._2))
+
   def from(s: String): Long = largeNumberUnits.foldLeft(s)((acc, kv) => acc.replace(kv._1, kv._2)).trim.toLong
 
   def findFirst(s: String): Option[Long] = largeNumberPattern findFirstIn s match {
