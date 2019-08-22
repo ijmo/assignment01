@@ -1,10 +1,12 @@
 # 사전과제1. 지자체 협약 지원 API
 국내 각 지자체의 중소기업은행에서 각 기업에 지원하는 금융 정보 제공을 위한 API 서비스 입니다.
+<br><br>
 
 ## 개발 환경
 - Scala 2.12.1
 - Spring Boot 2.1.7
 - H2 with JPA
+<br>
 
 ## 문제해결 방법
 
@@ -13,6 +15,7 @@
 - AssistanceInfo: 지원 정보. 생성 시 추천 기능에 필요한 지역에 대한 정보(지역명, 코드, 위/경도)를 찾아내 함께 저장합니다.
 
 - Organization: 지자체(기관)
+<br>
 
 ### 애매한 정보에 대한 처리
 
@@ -20,9 +23,10 @@
 
 추천 금액이 정해있지 않아 MAX(Long)로 저장합니다.
 
-#### `이차보전` - `대출이자 전액`의 경우
+#### ***이차보전*** - ***대출이자 전액***의 경우
 
 이자의 제한이 없다는 뜻으로 받아드려, 100%로 저장합니다.
+<br>
 
 ### 기본 기능의 경우
 
@@ -35,6 +39,7 @@
 - 이차보전은 보전율을 2개로 나눠서 저장. 보전율이 없을 경우엔 둘 다 100%로 취급
 - 추천기관은 첫번째 컬럼인 지자체명을 Many to Many로 연결
 - 관리점, 취급점은 문자열 그대로 저장
+<br>
 
 ### 추천 기능의 경우
 
@@ -43,10 +48,12 @@
 3. 토큰화 된 목록에서 명사를 뽑아 지역명 사전과 비교하며 찾기. 결과가 1개 이상일 경우에는 부모-자식 관계의 지역을 우선순위로 선택. (e.g. 충남 대천은 대천이 충남에 속해있으므로 부모자식 관계임) 부모-자식이 없을 경우에는 가장 큰 단위의 행정구역을 선택.
 4. 입력 받은 문자열에서 나머지 조건(금액, 이차보전율 등)은 정규식으로 찾기
 5. 찾은 요소들을 SQL을 이용해 검색. JPQL에서는 From절에 Nested Query를 사용하지 못해 Native Query를 사용.
+<br>
 
 ## Requirements
 
 [sbt](https://www.scala-sbt.org)가 필요합니다.
+<br>
 
 ## 빌드 및 실행 방법
 실행
@@ -58,7 +65,7 @@ $ sbt run
 ```
 $ sbt test
 ```
-
+<br>
 
 ## Basic API
 
@@ -69,7 +76,7 @@ $ sbt test
 | POST | /api/signup | 회원가입 (필드: 'username', 'password') <br> e.g. {"username": "newuser", "password": "secret"}<br>성공시 - 201 |
 | POST | /oauth/token | 로그인<br>Basic Auth(Username: financialClientId / Password: 1111)<br>grant_type=password<br>username=newuser<br>password=secret |
 | POST | /oauth/token | 토큰 재발급<br>Basic Auth(Username: financialClientId / Password: 1111)<br>grant_type=refresh_token<br>refresh_token=TOKEN_HERE |
-
+<br>
 
 ## Resource API
 

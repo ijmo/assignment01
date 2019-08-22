@@ -38,7 +38,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     assistanceInfoDTO.getMgmt,
     assistanceInfoDTO.getReception)
 
-  def addAssistanceInfo(organizationName: String, target: String, usage: String, limit: String, rates: String,
+  def addAssistanceInfo(organizationName: String, target: String, usages: String, maxAmount: String, rates: String,
                         recommenderNames: String, management: String, reception: String): AssistanceInfo = {
     Analyzer.setUserDictionary(Iterator.single(organizationName))
     val organization: Organization = organizationService.findOrAddOrganization(organizationName)
@@ -57,8 +57,8 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
         districtCode,
         longitude,
         latitude,
-        AssistanceInfo.parseUsages(usage),
-        limit,
+        AssistanceInfo.parseUsages(usages),
+        maxAmount,
         rates,
         recommenders,
         management,
@@ -77,8 +77,9 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
       assistanceInfoDTO.getMgmt,
       assistanceInfoDTO.getReception)
 
-  def updateAssistanceInfo(assistanceInfo: AssistanceInfo, organizationName: String, target: String, usage: String, limit: String, rate: String,
-                           recommenderNames: String, management: String, reception: String): AssistanceInfo = {
+  def updateAssistanceInfo(assistanceInfo: AssistanceInfo, organizationName: String, target: String,
+                           usage: String, maxAmount: String, rate: String, recommenderNames: String,
+                           management: String, reception: String): AssistanceInfo = {
     Analyzer.setUserDictionary(Iterator.single(organizationName))
     val organization: Organization = organizationService.findOrAddOrganization(organizationName)
     val recommenders = recommenderNames.split(",").toList.map(_.trim).map(s => organizationService.findOrAddOrganization(s))
@@ -88,7 +89,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     val districtCode = if (district.isEmpty) null else district.min.code
     val (longitude, latitude) = if (district.isEmpty) (null, null) else
       (district.min.location.x.toString, district.min.location.y.toString)
-    val maxAmountNum = Numbers.findFirst(limit)
+    val maxAmountNum = Numbers.findFirst(maxAmount)
     val rates = AssistanceInfo.parseRates(rate)
 
     assistanceInfo.setOrganization(organization)
@@ -98,7 +99,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     assistanceInfo.setLongitude(longitude)
     assistanceInfo.setLatitude(latitude)
     assistanceInfo.setUsages(AssistanceInfo.parseUsages(usage))
-    assistanceInfo.setMaxAmount(limit)
+    assistanceInfo.setMaxAmount(maxAmount)
     assistanceInfo.setMaxAmountNum(if (maxAmountNum.isDefined) maxAmountNum.get else Long.MaxValue)
     assistanceInfo.setRate1(rates._1)
     assistanceInfo.setRate2(rates._2)

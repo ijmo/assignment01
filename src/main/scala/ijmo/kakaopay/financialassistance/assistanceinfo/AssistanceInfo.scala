@@ -11,9 +11,9 @@ import scala.util.matching.Regex
 
 object AssistanceInfo {
   def apply(organization: Organization, target: String, targetDistrictName: String, targetDistrictCode: String,
-            longitude: String, latitude: String, usage: String, limit: String, rate: String,
+            longitude: String, latitude: String, usages: String, maxAmount: String, rate: String,
             recommenders: List[Organization], management: String, reception: String): AssistanceInfo = {
-    val maxAmount = Numbers.findFirst(limit)
+    val maxAmountNum = Numbers.findFirst(maxAmount)
     val rates = parseRates(rate)
     val assistanceInfo = new AssistanceInfo(
       organization,
@@ -22,9 +22,9 @@ object AssistanceInfo {
       targetDistrictCode,
       longitude,
       latitude,
-      usage,
-      limit,
-      if (maxAmount.isDefined) maxAmount.get else Long.MaxValue,
+      usages,
+      maxAmount,
+      if (maxAmountNum.isDefined) maxAmountNum.get else Long.MaxValue,
       rates._1,
       rates._2,
       recommenders.asJava,
