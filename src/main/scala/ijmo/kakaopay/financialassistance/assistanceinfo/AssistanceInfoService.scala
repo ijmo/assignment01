@@ -29,14 +29,14 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
   }
 
   def addAssistanceInfo(assistanceInfoDTO: AssistanceInfoDTO): AssistanceInfo = addAssistanceInfo(
-    assistanceInfoDTO.region,
-    assistanceInfoDTO.target,
-    assistanceInfoDTO.usage,
-    assistanceInfoDTO.limit,
-    assistanceInfoDTO.rate,
-    assistanceInfoDTO.institute,
-    assistanceInfoDTO.mgmt,
-    assistanceInfoDTO.reception)
+    assistanceInfoDTO.getRegion,
+    assistanceInfoDTO.getTarget,
+    assistanceInfoDTO.getUsage,
+    assistanceInfoDTO.getLimit,
+    assistanceInfoDTO.getRate,
+    assistanceInfoDTO.getInstitute,
+    assistanceInfoDTO.getMgmt,
+    assistanceInfoDTO.getReception)
 
   def addAssistanceInfo(organizationName: String, target: String, usage: String, limit: String, rates: String,
                         recommenderNames: String, management: String, reception: String): AssistanceInfo = {
@@ -49,7 +49,6 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     val (longitude, latitude) = if (district.isEmpty) (null, null) else
       (district.min.location.x.toString, district.min.location.y.toString)
 
-    println(organizationName)
     assistanceInfoRepository.save(
       AssistanceInfo(
         organization,
@@ -69,14 +68,14 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
   def updateAssistanceInfo(assistanceInfo: AssistanceInfo, assistanceInfoDTO: AssistanceInfoDTO): AssistanceInfo =
     updateAssistanceInfo(
       assistanceInfo,
-      assistanceInfoDTO.region,
-      assistanceInfoDTO.target,
-      assistanceInfoDTO.usage,
-      assistanceInfoDTO.limit,
-      assistanceInfoDTO.rate,
-      assistanceInfoDTO.institute,
-      assistanceInfoDTO.mgmt,
-      assistanceInfoDTO.reception)
+      assistanceInfoDTO.getRegion,
+      assistanceInfoDTO.getTarget,
+      assistanceInfoDTO.getUsage,
+      assistanceInfoDTO.getLimit,
+      assistanceInfoDTO.getRate,
+      assistanceInfoDTO.getInstitute,
+      assistanceInfoDTO.getMgmt,
+      assistanceInfoDTO.getReception)
 
   def updateAssistanceInfo(assistanceInfo: AssistanceInfo, organizationName: String, target: String, usage: String, limit: String, rate: String,
                            recommenderNames: String, management: String, reception: String): AssistanceInfo = {

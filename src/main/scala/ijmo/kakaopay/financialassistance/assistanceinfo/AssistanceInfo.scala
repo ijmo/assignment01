@@ -6,10 +6,8 @@ import ijmo.kakaopay.financialassistance.base.Numbers
 import ijmo.kakaopay.financialassistance.organization.Organization
 import javax.persistence._
 
-import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
 import scala.util.matching.Regex
-
 
 object AssistanceInfo {
   def apply(organization: Organization, target: String, targetDistrictName: String, targetDistrictCode: String,
@@ -97,77 +95,93 @@ class AssistanceInfo private (aOrganization: Organization,
   // show columns from assistance_info;
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @BeanProperty
-  val id: Long = 0L
+  private val id: Long = 0L
 
   @OneToOne(fetch = FetchType.EAGER)
-  @BeanProperty
-  var organization: Organization = aOrganization
+  private var organization: Organization = aOrganization
 
   @Column(name = "target", nullable = false)
-  @BeanProperty
-  var target: String = aTarget
+  private var target: String = aTarget
 
   @Column(name = "target_district_name", nullable = true)
-  @BeanProperty
-  var targetDistrictName: String = aTargetDistrictName
+  private var targetDistrictName: String = aTargetDistrictName
 
   @Column(name = "target_district_code", nullable = true)
-  @BeanProperty
-  var targetDistrictCode: String = aTargetDistrictCode
+  private var targetDistrictCode: String = aTargetDistrictCode
 
   @Column(name = "longitude", nullable = true)
-  @BeanProperty
-  var longitude: String = aLongitude
+  private var longitude: String = aLongitude
 
   @Column(name = "latitude", nullable = true)
-  @BeanProperty
-  var latitude: String = aLatitude
+  private var latitude: String = aLatitude
 
   @Column(name = "usages", nullable = false)
-  @BeanProperty
-  var usages: String = aUsages
+  private var usages: String = aUsages
 
   @Column(name = "max_amount", nullable = true)
-  @BeanProperty
-  var maxAmount: String = aMaxAmount
+  private var maxAmount: String = aMaxAmount
 
   @Column(name = "max_amount_num", nullable = true)
-  @BeanProperty
-  var maxAmountNum: java.lang.Long = aMaxAmountNum
+  private var maxAmountNum: java.lang.Long = aMaxAmountNum
 
   @Column(name = "rate1", nullable = true)
-  @BeanProperty
-  var rate1: java.lang.Double = aRate1
+  private var rate1: java.lang.Double = aRate1
 
   @Column(name = "rate2", nullable = true)
-  @BeanProperty
-  var rate2: java.lang.Double = aRate2
+  private var rate2: java.lang.Double = aRate2
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "assistance_info_organization_recommend"
     , joinColumns = Array(new JoinColumn(name = "assistance_info_id"))
     , inverseJoinColumns = Array(new JoinColumn(name = "organization_code")))
-  @BeanProperty
-  var recommenders: java.util.List[Organization] = aRecommenders
+  private var recommenders: java.util.List[Organization] = aRecommenders
 
   @Column(name = "management", nullable = false)
-  @BeanProperty
-  var management: String = aManagement
+  private var management: String = aManagement
 
   @Column(name = "reception", nullable = false)
-  @BeanProperty
-  var reception: String = aReception
+  private var reception: String = aReception
 
   @Column(name = "created_on")
-  @BeanProperty
-  var createdOn: ZonedDateTime = ZonedDateTime.now
+  private var createdOn: ZonedDateTime = ZonedDateTime.now
 
   @Column(name = "modified_on")
-  @BeanProperty
-  var modifiedOn: ZonedDateTime = aModifiedOn
+  private var modifiedOn: ZonedDateTime = aModifiedOn
 
   override def toString: String =
     s"AssistanceInfo($organization, $target, $targetDistrictName, $targetDistrictCode, $longitude, $latitude, $usages, $maxAmount, $rate1, $rate2, ${recommenders.asScala.toList.toString}, $management, $reception)"
 
+  def getId: Long = id
+  def getOrganization: Organization = organization
+  def setOrganization(organization: Organization): Unit = this.organization = organization
+  def getTarget: String = target
+  def setTarget(target: String): Unit = this.target = target
+  def getTargetDistrictName: String = targetDistrictName
+  def setTargetDistrictName(targetDistrictName: String): Unit = this.targetDistrictName = targetDistrictName
+  def getTargetDistrictCode: String = targetDistrictCode
+  def setTargetDistrictCode(targetDistrictCode: String): Unit = this.targetDistrictCode = targetDistrictCode
+  def getLongitude: String = longitude
+  def setLongitude(longitude: String): Unit = this.longitude = longitude
+  def getLatitude: String = latitude
+  def setLatitude(latitude: String): Unit = this.latitude = latitude
+  def getUsages: String = usages
+  def setUsages(usages: String): Unit = this.usages = usages
+  def getMaxAmount: String = maxAmount
+  def setMaxAmount(maxAmount: String): Unit = this.maxAmount = maxAmount
+  def getMaxAmountNum: java.lang.Long = maxAmountNum
+  def setMaxAmountNum(maxAmountNum: java.lang.Long): Unit = this.maxAmountNum = maxAmountNum
+  def getRate1: java.lang.Double = rate1
+  def setRate1(rate1: java.lang.Double): Unit = this.rate1 = rate1
+  def getRate2: java.lang.Double = rate2
+  def setRate2(rate2: java.lang.Double): Unit = this.rate2 = rate2
+  def getRecommenders: java.util.List[Organization] = recommenders
+  def setRecommenders(recommenders: java.util.List[Organization]): Unit = this.recommenders = recommenders
+  def getManagement: String = management
+  def setManagement(management: String): Unit = this.management = management
+  def getReception: String = reception
+  def setReception(reception: String): Unit = this.reception = reception
+  def getCreatedOn: ZonedDateTime = createdOn
+  def setCreatedOn(createdOn: ZonedDateTime): Unit = this.createdOn = createdOn
+  def getModifiedOn: ZonedDateTime = modifiedOn
+  def setModifiedOn(modifiedOn: ZonedDateTime): Unit = this.modifiedOn = modifiedOn
 }

@@ -2,18 +2,14 @@ package ijmo.kakaopay.financialassistance.search
 
 import javax.validation.constraints.NotEmpty
 
-import scala.beans.BeanProperty
-
-object SearchQueryDTO {
-  def apply(input: String): SearchQueryDTO =
-    new SearchQueryDTO(input)
-}
-
-class SearchQueryDTO (aInput: String) {
+class SearchQueryDTO(aInput: String) {
   def this() {
     this(null)
   }
-  @BeanProperty
-  @NotEmpty
-  var input: String = aInput
+
+  @NotEmpty(message = "'input' is blank")
+  private var input: String = aInput
+
+  def getInput: String = input
+  def setInput(input: String): Unit = this.input = input
 }

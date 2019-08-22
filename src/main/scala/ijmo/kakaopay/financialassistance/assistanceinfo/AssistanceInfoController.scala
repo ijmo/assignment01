@@ -41,10 +41,10 @@ class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService
   @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
   @PostMapping(Array("/match"))
   def get(@RequestBody assistanceInfoDTO: AssistanceInfoDTO): ResponseEntity[Object] = {
-    if (assistanceInfoDTO.region == null || assistanceInfoDTO.region.trim == "") {
+    if (assistanceInfoDTO.getRegion == null || assistanceInfoDTO.getRegion.trim == "") {
       return new ResponseEntity(HttpStatus.BAD_REQUEST)
     }
-    val result = assistanceInfoService.findByOrganizationName(assistanceInfoDTO.region)
+    val result = assistanceInfoService.findByOrganizationName(assistanceInfoDTO.getRegion)
     if (result == null) return new ResponseEntity(HttpStatus.NOT_FOUND)
     new ResponseEntity(AssistanceInfoDTO(result), HttpStatus.OK)
   }
@@ -56,13 +56,13 @@ class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService
       val msg = result.getAllErrors.asScala.map(_.getDefaultMessage).mkString(", ")
       return new ResponseEntity(msg, HttpStatus.BAD_REQUEST)
     }
-    val assistanceInfo = searchService.searchByText(query.input)
+    val assistanceInfo = searchService.searchByText(query.getInput)
     if (assistanceInfo == null) return new ResponseEntity(HttpStatus.NOT_FOUND)
     val m: Map[String, String] = Map(
-      "region" -> assistanceInfo.organization.code,
-      "usage" -> assistanceInfo.usages.split(",").mkString(" 및 "),
-      "limit" -> assistanceInfo.maxAmount,
-      "rate" -> Numbers.rates(assistanceInfo.rate1, assistanceInfo.rate2))
+      "region" -> assistanceInfo.getOrganization.getCode,
+      "usage" -> assistanceInfo.getUsages.split(",").mkString(" 및 "),
+      "limit" -> assistanceInfo.getMaxAmount,
+      "rate" -> Numbers.rates(assistanceInfo.getRate1, assistanceInfo.getRate2))
     new ResponseEntity(m.asJava, HttpStatus.OK)
   }
 
@@ -75,7 +75,7 @@ class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService
     }
     val assistanceInfo = assistanceInfoService.addAssistanceInfo(assistanceInfoDTO)
     val headers: HttpHeaders = new HttpHeaders()
-    headers.setLocation(URI.create("/api/assistanceinfo/" + assistanceInfo.id))
+    headers.setLocation(URI.create("/api/assistanceinfo/" + assistanceInfo.getId))
     new ResponseEntity(HttpStatus.CREATED)
   }
 
@@ -91,7 +91,7 @@ class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService
 
     assistanceInfoService.updateAssistanceInfo(assistanceInfo, assistanceInfoDTO)
     val headers: HttpHeaders = new HttpHeaders()
-    headers.setLocation(URI.create("/api/assistanceinfo/" + assistanceInfo.id))
+    headers.setLocation(URI.create("/api/assistanceinfo/" + assistanceInfo.getId))
     new ResponseEntity(HttpStatus.ACCEPTED)
   }
 }

@@ -3,20 +3,19 @@ package ijmo.kakaopay.financialassistance.assistanceinfo
 import ijmo.kakaopay.financialassistance.base.Numbers
 import javax.validation.constraints.NotEmpty
 
-import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
 
 object AssistanceInfoDTO {
   def apply(info: AssistanceInfo): AssistanceInfoDTO =
     new AssistanceInfoDTO(
-      info.organization.name,
-      info.target,
-      info.usages.split(",").mkString(" 및 "),
-      info.maxAmount,
-      Numbers.rates(info.rate1, info.rate2),
-      info.recommenders.asScala.map(_.name).mkString(", "),
-      info.management,
-      info.reception)
+      info.getOrganization.getName,
+      info.getTarget,
+      info.getUsages.split(",").mkString(" 및 "),
+      info.getMaxAmount,
+      Numbers.rates(info.getRate1, info.getRate2),
+      info.getRecommenders.asScala.map(_.getName).mkString(", "),
+      info.getManagement,
+      info.getReception)
 }
 
 class AssistanceInfoDTO (aRegion: String,
@@ -30,12 +29,38 @@ class AssistanceInfoDTO (aRegion: String,
   def this() {
     this(null, null, null, null, null, null, null, null)
   }
-  @BeanProperty @NotEmpty(message = "'region' is blank") var region: String = aRegion
-  @BeanProperty @NotEmpty(message = "'target' is blank") var target: String = aTarget
-  @BeanProperty @NotEmpty(message = "'usage' is blank") var usage: String = aUsage
-  @BeanProperty @NotEmpty(message = "'limit' is blank") var limit: String = aLimit
-  @BeanProperty @NotEmpty(message = "'rate' is blank") var rate: String = aRate
-  @BeanProperty @NotEmpty(message = "'institute' is blank") var institute: String = aInstitute
-  @BeanProperty @NotEmpty(message = "'mgmt' is blank") var mgmt: String = aMgmt
-  @BeanProperty @NotEmpty(message = "'reception' is blank") var reception: String = aReception
+
+  @NotEmpty(message = "'region' is blank")
+  private var region: String = aRegion
+  @NotEmpty(message = "'target' is blank")
+  private var target: String = aTarget
+  @NotEmpty(message = "'usage' is blank")
+  private var usage: String = aUsage
+  @NotEmpty(message = "'limit' is blank")
+  private var limit: String = aLimit
+  @NotEmpty(message = "'rate' is blank")
+  private var rate: String = aRate
+  @NotEmpty(message = "'institute' is blank")
+  private var institute: String = aInstitute
+  @NotEmpty(message = "'mgmt' is blank")
+  private var mgmt: String = aMgmt
+  @NotEmpty(message = "'reception' is blank")
+  private var reception: String = aReception
+
+  def getRegion: String = region
+  def setRegion(region: String): Unit = this.region = region
+  def getTarget: String = target
+  def setTarget(target: String): Unit = this.target = target
+  def getUsage: String = usage
+  def setUsage(usage: String): Unit = this.usage = usage
+  def getLimit: String = limit
+  def setLimit(limit: String): Unit = this.limit = limit
+  def getRate: String = rate
+  def setRate(rate: String): Unit = this.rate = rate
+  def getInstitute: String = institute
+  def setInstitute(institute: String): Unit = this.institute = institute
+  def getMgmt: String = mgmt
+  def setMgmt(mgmt: String): Unit = this.mgmt = mgmt
+  def getReception: String = reception
+  def setReception(reception: String): Unit = this.reception = reception
 }

@@ -128,7 +128,7 @@ class AssistanceInfoIntegrationTest extends IntegrationSpec {
       val param = new AssistanceInfoDTO(newRegion, null, null, null, null, null, null, null)
       val response = testRestTemplate.postForEntity(path("/match"), createHttpEntityJWT(param, token), classOf[AssistanceInfoDTO])
       response.getStatusCode shouldBe HttpStatus.OK
-      response.getBody.region shouldBe newRegion
+      response.getBody.getRegion shouldBe newRegion
     }
 
     scenario("Sort by support amount limit") {
@@ -156,7 +156,7 @@ class AssistanceInfoIntegrationTest extends IntegrationSpec {
     scenario("Search a proper AssistanceInfo by given text") {
       val text = "철수는 충남 대천에 살고 있는데 시설 관리 비즈니스를 하기를 원한다. 대체로 2백만은 필요하고, 이차보전은 2%이내가 좋다는"
       val response = testRestTemplate.postForEntity(path("/search"), createHttpEntityJWT(new SearchQueryDTO(text), token), classOf[AssistanceInfoDTO])
-      response.getBody.region shouldBe "reg0003"
+      response.getBody.getRegion shouldBe "reg0003"
     }
   }
 }
