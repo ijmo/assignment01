@@ -10,7 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 object FinancialAssistanceApp {
   def main(args: Array[String]) : Unit = {
     Future { Analyzer.parse("") } (ExecutionContext.global)
-    Future { DistrictRepository.getPlaceNameDistrictMap } (ExecutionContext.global)
+    DistrictRepository.getPlaceNameDistrictMap
     SpringApplication.run(classOf[FinancialAssistanceApp], args :_ *)
   }
 }
