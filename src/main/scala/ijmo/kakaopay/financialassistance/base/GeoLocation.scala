@@ -1,4 +1,6 @@
-package ijmo.kakaopay.financialassistance
+package ijmo.kakaopay.financialassistance.base
+
+import ijmo.kakaopay.financialassistance.base
 
 object GeoLocation {
   def apply(x: Double, y: Double): GeoLocation = new GeoLocation(x, y)

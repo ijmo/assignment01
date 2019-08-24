@@ -1,6 +1,6 @@
 package ijmo.kakaopay.financialassistance.administrativedistrict
 
-import ijmo.kakaopay.financialassistance.GeoLocation
+import ijmo.kakaopay.financialassistance.base.GeoLocation
 
 import scala.collection.Set
 import scala.util.matching.Regex

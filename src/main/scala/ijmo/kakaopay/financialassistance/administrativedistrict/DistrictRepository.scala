@@ -2,8 +2,8 @@ package ijmo.kakaopay.financialassistance.administrativedistrict
 
 import java.io.File
 
-import com.github.tototoshi.csv.{CSVReader, CSVWriter}
-import ijmo.kakaopay.financialassistance.GeoLocation
+import ijmo.kakaopay.financialassistance.base.GeoLocation
+import ijmo.kakaopay.financialassistance.util.CsvUtil
 import play.api.libs.json.Json
 import scalaj.http.{Http, HttpResponse}
 
@@ -15,21 +15,17 @@ object DistrictRepository {
   private lazy val districts: immutable.HashMap[String, List[District]] = loadDistricts(readCSV())
 
   private def getLocationFromKakao(d: District): District = {
-    def locationFromKakao(q: String): GeoLocation = {
-      val response: HttpResponse[String] = Http("https://dapi.kakao.com/v2/local/search/address.json")
-        .param("query", q)
-        .header("Accept", "application/json")
-        .header("Authorization", "KakaoAK c95295ed963a98c89e51c8ff0fa6fa95")
-        .asString
-      val json = Json.parse(response.body)
-      val elem = (json \ "documents" \ 0).getOrElse(return null)
-      val x = (elem \ "x").get.as[String]
-      val y = (elem \ "y").get.as[String]
-      GeoLocation(x.toDouble, y.toDouble)
-    }
     println("Getting location from kakao... " + d.fullName)
-    val location = locationFromKakao(d.fullName)
-    d.copy(location = location)
+    val response: HttpResponse[String] = Http("https://dapi.kakao.com/v2/local/search/address.json")
+      .param("query", d.fullName)
+      .header("Accept", "application/json")
+      .header("Authorization", "KakaoAK c95295ed963a98c89e51c8ff0fa6fa95")
+      .asString
+    val json = Json.parse(response.body)
+    val elem = (json \ "documents" \ 0).getOrElse(return null)
+    val x = (elem \ "x").get.as[String]
+    val y = (elem \ "y").get.as[String]
+    d.copy(location = GeoLocation(x.toDouble, y.toDouble))
   }
 
   private def pmapDistricts(f: District => District, ds: List[District]): List[District] = {
@@ -50,15 +46,13 @@ object DistrictRepository {
   private def readCSV(): List[List[String]] = {
     val locFile = new File(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION)
     lazy val baseFile = new File(ADMINISTRATIVE_DISTRICTS)
-    val reader = CSVReader.open(if (locFile.isFile) locFile else baseFile)
-    reader.all()
+
+    CsvUtil.readAll(if (locFile.isFile) locFile else baseFile)
   }
 
   private def writeCSV(rows: List[List[String]]): Unit = {
     val outFile = new File(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION)
-    val writer = CSVWriter.open(outFile)
-    writer.writeAll(rows)
-    writer.close()
+    CsvUtil.write(rows, outFile)
   }
 
   private def mapByName(districts: List[District]): immutable.HashMap[String, List[District]] = {
