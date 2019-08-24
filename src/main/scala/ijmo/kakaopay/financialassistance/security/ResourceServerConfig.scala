@@ -16,10 +16,13 @@ class ResourceServerConfig (val tokenStore: TokenStore,
   override def configure(http: HttpSecurity): Unit = {
     if (env.getActiveProfiles.contains("dev")) {
       http.headers().frameOptions().disable()
+      http.authorizeRequests()
+        .antMatchers("/h2-console/**").permitAll()
+        .antMatchers("/actuator/**").permitAll()
     }
     http
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      .and().authorizeRequests().anyRequest().permitAll()
+      .and().authorizeRequests().anyRequest().authenticated()
   }
 
   override def configure(config: ResourceServerSecurityConfigurer) {
