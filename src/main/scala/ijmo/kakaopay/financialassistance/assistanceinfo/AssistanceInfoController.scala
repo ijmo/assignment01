@@ -73,7 +73,7 @@ class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService
     assistanceInfoService.updateAssistanceInfo(assistanceInfo, assistanceInfoDTO)
     val headers: HttpHeaders = new HttpHeaders()
     headers.setLocation(URI.create("/api/assistanceinfo/" + assistanceInfo.getId))
-    new ResponseEntity(HttpStatus.ACCEPTED)
+    new ResponseEntity(HttpStatus.OK)
   }
 
   /**
