@@ -6,10 +6,10 @@ import org.slf4j.LoggerFactory
 object CsvUtil {
   val log = LoggerFactory.getLogger(CsvUtil.getClass)
 
-  def readAll(file: java.io.File): List[List[String]] = {
+  def readAll(file: java.io.File, encoding: String): List[List[String]] = {
     var reader: CSVReader = null
     try {
-      reader = CSVReader.open(file)
+      reader = CSVReader.open(file, encoding)
       reader.all()
     } catch {
       case e: Exception => log.error(e.getMessage); null

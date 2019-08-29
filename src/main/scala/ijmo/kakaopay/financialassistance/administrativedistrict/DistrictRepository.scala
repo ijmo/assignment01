@@ -47,7 +47,7 @@ object DistrictRepository {
     val locFile = new File(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION)
     lazy val baseFile = new File(ADMINISTRATIVE_DISTRICTS)
 
-    CsvUtil.readAll(if (locFile.isFile) locFile else baseFile)
+    CsvUtil.readAll(if (locFile.isFile) locFile else baseFile, "utf-8")
   }
 
   private def writeCSV(rows: List[List[String]]): Unit = {
