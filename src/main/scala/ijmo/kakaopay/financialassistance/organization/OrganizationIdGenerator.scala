@@ -7,7 +7,7 @@ import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.id.IdentifierGenerator
 
 object OrganizationIdGenerator {
-  val prefix = "reg"
+  val PREFIX = "reg"
 }
 
 class OrganizationIdGenerator extends IdentifierGenerator {
@@ -17,8 +17,8 @@ class OrganizationIdGenerator extends IdentifierGenerator {
     val resultSet: ResultSet = statement.executeQuery("SELECT COUNT(*) AS id FROM organization")
 
     if (resultSet.next) {
-      val id = resultSet.getInt(1)
-      val generatedId = OrganizationIdGenerator.prefix + id.toString.reverse.padTo(4, '0').reverse
+      val id = resultSet.getInt(1) + 1
+      val generatedId = OrganizationIdGenerator.PREFIX + id.toString.reverse.padTo(4, '0').reverse
       return generatedId
     }
     null

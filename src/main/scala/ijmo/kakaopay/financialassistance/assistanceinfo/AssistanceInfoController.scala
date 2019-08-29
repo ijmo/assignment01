@@ -17,55 +17,9 @@ import scala.collection.JavaConverters._
 @RequestMapping(Array("/api/assistanceinfo"))
 class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService,
                                 val searchService: SearchService) {
-  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
-  @GetMapping(Array(""))
-  def list(): java.lang.Iterable[AssistanceInfoDTO] = {
-    val infos = assistanceInfoService.findAll()
-    infos.map(AssistanceInfoDTO(_)).asJava
-  }
-
-  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
-  @GetMapping(Array("/find"))
-  def list(@RequestParam limit: Int): java.lang.Iterable[String] = {
-    val pageNum = 0
-    val pageable: Pageable = PageRequest.of(pageNum, limit)
-    assistanceInfoService.findOrganizationNames(pageable).asJava
-  }
-
-  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
-  @GetMapping(Array("/minimumRate"))
-  def listMinimumRate(): java.lang.Iterable[String] = {
-    assistanceInfoService.findOrganizationNamesWithMinimumRate().asJava
-  }
-
-  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
-  @PostMapping(Array("/match"))
-  def get(@RequestBody assistanceInfoDTO: AssistanceInfoDTO): ResponseEntity[Object] = {
-    if (assistanceInfoDTO.getRegion == null || assistanceInfoDTO.getRegion.trim == "") {
-      return new ResponseEntity(HttpStatus.BAD_REQUEST)
-    }
-    val result = assistanceInfoService.findByOrganizationName(assistanceInfoDTO.getRegion)
-    if (result == null) return new ResponseEntity(HttpStatus.NOT_FOUND)
-    new ResponseEntity(AssistanceInfoDTO(result), HttpStatus.OK)
-  }
-
-  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
-  @PostMapping(Array("/search"))
-  def search(@Valid @RequestBody query: SearchQueryDTO, result: BindingResult): ResponseEntity[Object] = {
-    if (result.hasErrors) {
-      val msg = result.getAllErrors.asScala.map(_.getDefaultMessage).mkString(", ")
-      return new ResponseEntity(msg, HttpStatus.BAD_REQUEST)
-    }
-    val assistanceInfo = searchService.searchByText(query.getInput)
-    if (assistanceInfo == null) return new ResponseEntity(HttpStatus.NOT_FOUND)
-    val m: Map[String, String] = Map(
-      "region" -> assistanceInfo.getOrganization.getCode,
-      "usage" -> assistanceInfo.getUsages.split(",").mkString(" 및 "),
-      "limit" -> assistanceInfo.getMaxAmount,
-      "rate" -> Numbers.rates(assistanceInfo.getRate1, assistanceInfo.getRate2))
-    new ResponseEntity(m.asJava, HttpStatus.OK)
-  }
-
+  /**
+    * (필수) 레코드 저장
+    */
   @PreAuthorize("#oauth2.hasScope('write') and #oauth2.hasScope('assistanceInfo')")
   @PostMapping(Array(""))
   def create(@Valid @RequestBody assistanceInfoDTO: AssistanceInfoDTO, result: BindingResult): ResponseEntity[Object] = {
@@ -79,6 +33,33 @@ class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService
     new ResponseEntity(HttpStatus.CREATED)
   }
 
+  /**
+    * (필수) 목록 검색
+    */
+  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
+  @GetMapping(Array(""))
+  def list(): java.lang.Iterable[AssistanceInfoDTO] = {
+    val infos = assistanceInfoService.findAll
+    infos.map(AssistanceInfoDTO(_)).asJava
+  }
+
+  /**
+    * (필수) 특정 지자체명의 지원정보 검색
+    */
+  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
+  @PostMapping(Array("/match"))
+  def get(@RequestBody assistanceInfoDTO: AssistanceInfoDTO): ResponseEntity[Object] = {
+    if (assistanceInfoDTO.getRegion == null || assistanceInfoDTO.getRegion.trim == "") {
+      return new ResponseEntity(HttpStatus.BAD_REQUEST)
+    }
+    val result = assistanceInfoService.findByOrganizationName(assistanceInfoDTO.getRegion)
+    if (result == null) return new ResponseEntity(HttpStatus.NOT_FOUND)
+    new ResponseEntity(AssistanceInfoDTO(result), HttpStatus.OK)
+  }
+
+  /**
+    * (필수) 지자체 지원정보 수정
+    */
   @PreAuthorize("#oauth2.hasScope('write') and #oauth2.hasScope('assistanceInfo')")
   @PutMapping(Array("/{id}"))
   def update(@PathVariable id: Long, @Valid @RequestBody assistanceInfoDTO: AssistanceInfoDTO, result: BindingResult): ResponseEntity[Object] = {
@@ -93,5 +74,46 @@ class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService
     val headers: HttpHeaders = new HttpHeaders()
     headers.setLocation(URI.create("/api/assistanceinfo/" + assistanceInfo.getId))
     new ResponseEntity(HttpStatus.ACCEPTED)
+  }
+
+  /**
+    * (필수) 지원금액 내림차순하여 특정개수만 출력
+    */
+  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
+  @GetMapping(Array("/find"))
+  def list(@RequestParam limit: Int): java.lang.Iterable[String] = {
+    val pageNum = 0
+    val pageable: Pageable = PageRequest.of(pageNum, limit)
+    assistanceInfoService.findOrganizationNames(pageable).asJava
+  }
+
+  /**
+    * (필수) 보전 비율이 가장 작은 지원정보의 기관명
+    */
+  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
+  @GetMapping(Array("/minimumRate"))
+  def listMinimumRate(): java.lang.Iterable[String] = {
+    assistanceInfoService.findOrganizationNamesWithMinimumRate.asJava
+  }
+
+  /**
+    * (선택) 텍스트 분석해서 추천
+    */
+  @PreAuthorize("#oauth2.hasScope('read') and #oauth2.hasScope('assistanceInfo')")
+  @PostMapping(Array("/search"))
+  def search(@Valid @RequestBody query: SearchQueryDTO, result: BindingResult): ResponseEntity[Object] = {
+    if (result.hasErrors) {
+      val msg = result.getAllErrors.asScala.map(_.getDefaultMessage).mkString(", ")
+      return new ResponseEntity(msg, HttpStatus.BAD_REQUEST)
+    }
+    val assistanceInfo = searchService.searchByText(query.getInput)
+    if (assistanceInfo == null) return new ResponseEntity(HttpStatus.NOT_FOUND)
+    val m: Map[String, String] = Map(
+      "region" -> assistanceInfo.getOrganization.getCode,
+      "usage" -> assistanceInfo.getUsages.split(",").mkString(" 및 "),
+      "limit" -> assistanceInfo.getMaxAmount,
+      "rate" -> Numbers.rates(assistanceInfo.getRate1, assistanceInfo.getRate2)
+    )
+    new ResponseEntity(m.asJava, HttpStatus.OK)
   }
 }

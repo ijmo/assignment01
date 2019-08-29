@@ -16,13 +16,14 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
                              val organizationService: OrganizationService,
                              val searchService: SearchService) {
 
-  def findAll(): Iterable[AssistanceInfo] = assistanceInfoRepository.findAll().asScala
+  def findAll: Iterable[AssistanceInfo] = assistanceInfoRepository.findAll().asScala
   def findById(id: Long): Option[AssistanceInfo] = Some(assistanceInfoRepository.findById(id))
   def findOrganizationNames(pageable: Pageable): Iterable[String] = assistanceInfoRepository.findOrganizationNames(pageable).getContent.asScala
-  def findOrganizationNamesWithMinimumRate(): Iterable[String] = assistanceInfoRepository.findOrganizationNamesWithMinimumRate().asScala
-
+  def findOrganizationNamesWithMinimumRate: Iterable[String] = assistanceInfoRepository.findOrganizationNamesWithMinimumRate.asScala
   def findByOrganizationName(organizationName: String): AssistanceInfo =
     assistanceInfoRepository.findByOrganizationName(organizationName)
+  def findByOrganizationCode: String => AssistanceInfo = assistanceInfoRepository.findByOrganizationCode
+  def search: (Double, Double, String, Long, Double) => Array[Object] = assistanceInfoRepository.findByXAndYAndUsagesAndMaxAmountAndRateLimit
 
   def addAssistanceInfo(assistanceInfo: AssistanceInfo): AssistanceInfo = {
     assistanceInfoRepository.save(assistanceInfo)
@@ -48,6 +49,8 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     val districtCode = if (district.isEmpty) null else district.min.code
     val (longitude, latitude) = if (district.isEmpty) (null, null) else
       (district.min.location.x.toString, district.min.location.y.toString)
+    val maxAmountNum = Numbers.findFirst(maxAmount)
+    val (rate1, rate2) = AssistanceInfo.parseRates(rates)
 
     assistanceInfoRepository.save(
       AssistanceInfo(
@@ -80,7 +83,6 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
   def updateAssistanceInfo(assistanceInfo: AssistanceInfo, organizationName: String, target: String,
                            usage: String, maxAmount: String, rate: String, recommenderNames: String,
                            management: String, reception: String): AssistanceInfo = {
-    Analyzer.setUserDictionary(Iterator.single(organizationName))
     val organization: Organization = organizationService.findOrAddOrganization(organizationName)
     val recommenders = recommenderNames.split(",").toList.map(_.trim).map(s => organizationService.findOrAddOrganization(s))
     val district = searchService.findDistricts(searchService.parse(target))

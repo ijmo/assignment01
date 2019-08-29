@@ -22,7 +22,9 @@ class ResourceServerConfig (val tokenStore: TokenStore,
     }
     http
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-      .and().authorizeRequests().anyRequest().authenticated()
+      .and().authorizeRequests()
+      .antMatchers("/api/signup").permitAll()
+      .anyRequest().authenticated()
   }
 
   override def configure(config: ResourceServerSecurityConfigurer) {

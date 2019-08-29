@@ -8,7 +8,6 @@ import javax.persistence._
 
 import scala.collection.JavaConverters._
 import scala.util.matching.Regex
-
 object AssistanceInfo {
   def apply(organization: Organization, target: String, targetDistrictName: String, targetDistrictCode: String,
             longitude: String, latitude: String, usages: String, maxAmount: String, rate: String,
@@ -41,33 +40,36 @@ object AssistanceInfo {
 
   def parseUsages(s: String): String = {
     if (s == null) return null
-    val usages = usagePattern.findAllIn(s)
-    if (usages == null) return null
-    usages.toSet.toList.sorted.mkString(",")
+    usagePattern.findAllIn(s).toList.distinct.sorted.mkString(",")
   }
 
-  private def convertRateToDouble(s: Any): java.lang.Double = s match {
-    case x: Int => x.toDouble
-    case x: String if x.endsWith("%") => x.dropRight(1).toDouble
-    case null => null
-    case _ => s.toString.toDouble
+  private def convertRateToDouble(s: String): java.lang.Double = try {
+    s match {
+      case x if x.endsWith("%") => x.dropRight(1).toDouble
+      case null => null
+      case _ => s.toString.toDouble
+    }
+  } catch {
+    case _: NumberFormatException => null
   }
 
   def parseRates(s: String): (java.lang.Double, java.lang.Double) = {
-    val d1 = "\\d+(.\\d+)?\\s*%?\\s*~".r findFirstIn s match {
-      case Some(ss) => ss.replaceAll("[~%\\s]+", "")
-      case _ => null
-    }
-    val d2Pattern = if (d1 == null) "\\d+(.\\d+)?%".r else "~\\s*\\d+(.\\d+)?%".r
-    val ss = if (d1 == null) s else s.drop(d1.length)
-    val d2 = d2Pattern findFirstIn ss match {
-      case Some(ss) => ss.replaceAll("[~%\\s]+", "")
-      case _ => null
-    }
+    def removeWhitespaceAndTilde(x: String): String = x.replaceAll("[~%\\s]+", "")
+    def convert(x: Option[String]): java.lang.Double = x.map(removeWhitespaceAndTilde).map(convertRateToDouble).get
 
-    if (d1 == null && d2 == null) return (100.0, 100.0)
-    if (d1 == null && d2 != null) return (convertRateToDouble(d2), convertRateToDouble(d2))
-    (convertRateToDouble(d1), convertRateToDouble(d2))
+    val from = "\\d+(.\\d+)?\\s*%?\\s*~".r findFirstIn s
+
+    val toPattern = if (from.isDefined) "~\\s*\\d+(.\\d+)?%".r else "\\d+(.\\d+)?%".r
+    val rest = if (from.isDefined) s.drop(from.get.length - 1) else s // drop except tilde
+    val to = toPattern findFirstIn rest
+
+    if (from.isEmpty && to.isEmpty) return (100.0, 100.0)
+    if (from.isEmpty && to.isDefined || from.isDefined && to.isEmpty) {
+      val either = if (from.isDefined) from else to
+      val value = convert(either)
+      return (value, value)
+    }
+    (convert(from), convert(to))
   }
 }
 

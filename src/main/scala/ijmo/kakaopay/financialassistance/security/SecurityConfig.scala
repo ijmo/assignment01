@@ -21,7 +21,6 @@ object SecurityConfig {
 @Configuration
 @EnableWebSecurity
 class SecurityConfig (val userService: UserService) extends WebSecurityConfigurerAdapter {
-
   @Bean
   override def authenticationManagerBean(): AuthenticationManager = super.authenticationManagerBean()
 

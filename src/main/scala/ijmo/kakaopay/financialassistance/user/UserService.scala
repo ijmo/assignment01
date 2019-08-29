@@ -15,7 +15,7 @@ class UserService (val userRepository: UserRepository) extends UserDetailsServic
     findByUsername(username).map(u => new UserPrincipal(u)).orNull
   }
 
-  def findByUsername(username: String): Option[User] = userRepository.findByUsername(username)
+  def findByUsername(username: String): Option[User] = userRepository.findByUsername(username.trim.toLowerCase)
 
   def findByUsernameAndPassword(username: String, password: String): Option[User] = {
     val user = findByUsername(username)
@@ -25,6 +25,6 @@ class UserService (val userRepository: UserRepository) extends UserDetailsServic
   }
 
   def addUser(user: User): User = {
-    userRepository.save(User(user.username, passwordEncoder.encode(user.password)))
+    userRepository.save(User(user.username.trim.toLowerCase, passwordEncoder.encode(user.password)))
   }
 }
