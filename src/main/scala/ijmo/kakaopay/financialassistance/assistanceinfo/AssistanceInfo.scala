@@ -94,12 +94,12 @@ class AssistanceInfo private (aOrganization: Organization,
     this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
   }
 
-  // show columns from assistance_info;
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private val id: Long = 0L
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "organization_code")
   private var organization: Organization = aOrganization
 
   @Column(name = "target", nullable = false)
@@ -133,7 +133,7 @@ class AssistanceInfo private (aOrganization: Organization,
   private var rate2: java.lang.Double = aRate2
 
   @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "assistance_info_organization_recommend"
+  @JoinTable(name = "assistance_info_organization_recommender"
     , joinColumns = Array(new JoinColumn(name = "assistance_info_id"))
     , inverseJoinColumns = Array(new JoinColumn(name = "organization_code")))
   private var recommenders: java.util.List[Organization] = aRecommenders
