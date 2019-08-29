@@ -19,7 +19,7 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-api" % "2.12.1",
   "org.scalaj" %% "scalaj-http" % "2.4.2",
   "org.scalactic" %% "scalactic" % "3.1.0-RC1",
-  "com.h2database" % "h2" % "1.4.199",
+  "com.h2database" % "h2" % "1.4.197",
   "com.github.tototoshi" %% "scala-csv" % "1.3.6",
   "org.bitbucket.eunjeon" %% "seunjeon" % "1.5.0" exclude("com.jsuereth", "sbt-pgp"),
   "com.typesafe.play" %% "play-json" % "2.7.3",
