@@ -1,7 +1,7 @@
 package ijmo.kakaopay.financialassistance.assistanceinfo
 
 import ijmo.kakaopay.financialassistance.base.Numbers
-import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotBlank
 
 import scala.collection.JavaConverters._
 
@@ -30,21 +30,21 @@ class AssistanceInfoDTO (aRegion: String,
     this(null, null, null, null, null, null, null, null)
   }
 
-  @NotEmpty(message = "'region' is blank")
+  @NotBlank(message = "'region' is blank")
   private var region: String = aRegion
-  @NotEmpty(message = "'target' is blank")
+  @NotBlank(message = "'target' is blank")
   private var target: String = aTarget
-  @NotEmpty(message = "'usage' is blank")
+  @NotBlank(message = "'usage' is blank")
   private var usage: String = aUsage
-  @NotEmpty(message = "'limit' is blank")
+  @NotBlank(message = "'limit' is blank")
   private var limit: String = aLimit
-  @NotEmpty(message = "'rate' is blank")
+  @NotBlank(message = "'rate' is blank")
   private var rate: String = aRate
-  @NotEmpty(message = "'institute' is blank")
+  @NotBlank(message = "'institute' is blank")
   private var institute: String = aInstitute
-  @NotEmpty(message = "'mgmt' is blank")
+  @NotBlank(message = "'mgmt' is blank")
   private var mgmt: String = aMgmt
-  @NotEmpty(message = "'reception' is blank")
+  @NotBlank(message = "'reception' is blank")
   private var reception: String = aReception
 
   def getRegion: String = region

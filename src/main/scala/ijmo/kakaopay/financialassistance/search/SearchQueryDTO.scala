@@ -1,13 +1,13 @@
 package ijmo.kakaopay.financialassistance.search
 
-import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotBlank
 
 class SearchQueryDTO(aInput: String) {
   def this() {
     this(null)
   }
 
-  @NotEmpty(message = "'input' is blank")
+  @NotBlank(message = "'input' is blank")
   private var input: String = aInput
 
   def getInput: String = input
