@@ -1,16 +1,29 @@
 package ijmo.kakaopay.financialassistance.assistanceinfo
 
 import org.springframework.data.domain.{Page, Pageable}
-import org.springframework.data.jpa.repository.{JpaRepository, Query}
+import org.springframework.data.jpa.repository.{EntityGraph, JpaRepository, Query}
 
 trait AssistanceInfoRepository extends JpaRepository[AssistanceInfo, java.lang.Long] {
-  // COALESCE
-  @Query(value = "SELECT name FROM (SELECT o.name, ai.max_amount_num, (rate1 + rate2)/2.0 AS avg_rate " +
-                   "FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code) " +
-                  "ORDER BY max_amount_num DESC, avg_rate ASC"
+
+  @EntityGraph(attributePaths = Array("organization", "recommenders"))
+  override def findAll(): java.util.List[AssistanceInfo]
+
+  @EntityGraph(attributePaths = Array("organization", "recommenders"))
+  override def findById(id: java.lang.Long): java.util.Optional[AssistanceInfo]
+
+  @EntityGraph(attributePaths = Array("organization", "recommenders"))
+  def findByOrganizationName(organizationName: String): AssistanceInfo
+
+  @EntityGraph(attributePaths = Array("organization", "recommenders"))
+  def findByOrganizationCode(organizationCode: String): AssistanceInfo
+
+  @Query(value = "SELECT name " +
+                   "FROM (SELECT o.name, ai.max_amount_num, (rate1 + rate2)/2.0 AS avg_rate " +
+                           "FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code) " +
+                  "ORDER BY (CASE WHEN max_amount_num >= 9000000000000000000 THEN 0 ELSE max_amount_num END) DESC, avg_rate ASC"
     , countQuery = "SELECT COUNT(*) FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code"
     , nativeQuery = true)
-  def findOrganizationNames(pageable: Pageable): Page[String]
+  def findOrganizationNamesOrderByMaxAmountNumDescAvgRateAsc(pageable: Pageable): Page[String]
 
   @Query(value = "SELECT o.name FROM (SELECT organization_code code, rate1 rate " +
                                        "FROM assistance_info ORDER BY rate1 ASC LIMIT 1) ai " +
@@ -20,14 +33,11 @@ trait AssistanceInfoRepository extends JpaRepository[AssistanceInfo, java.lang.L
 
   @Query(value = "SELECT organization_code code, SQRT(POWER(longitude - :x, 2) + POWER(latitude - :y, 2)) distance " +
                    "FROM assistance_info " +
-                  "WHERE (longitude IS NOT NULL OR latitude IS NOT NULL) AND usages LIKE  %:usages% " +
-                    "AND (CASE WHEN max_amount_num >= 9000000000000000000 THEN 0 ELSE max_amount_num END) >= :maxAmount AND rate2 >= :rateLimit ORDER BY distance ASC LIMIT 1"
+                  "WHERE (longitude IS NOT NULL OR latitude IS NOT NULL) " +
+                    "AND usages LIKE %:usages% " +
+                    "AND max_amount_num >= :maxAmount " +
+                    "AND rate2 >= :rateLimit " +
+                 " ORDER BY distance ASC LIMIT 1"
     , nativeQuery = true)
   def findByXAndYAndUsagesAndMaxAmountAndRateLimit(x: Double, y: Double, usages: String, maxAmount: Long, rateLimit: Double): Array[Object]
-
-  def findById(id: Long): AssistanceInfo
-  def findByOrganizationName(organizationName: String): AssistanceInfo
-  def findByOrganizationCode(organizationCode: String): AssistanceInfo
 }
-
-// select management from (SELECT management, SQRT(POWER(longitude - 0.0, 2) + POWER(latitude, 2)) dist FROM ASSISTANCE_INFO where longitude is not null or latitude is not null order by dist asc limit 1);
