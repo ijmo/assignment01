@@ -1,5 +1,7 @@
 package ijmo.kakaopay.financialassistance.organization
 
+import java.time.LocalDateTime
+
 import javax.persistence._
 import org.hibernate.annotations.GenericGenerator
 
@@ -21,12 +23,17 @@ class Organization (aName: String) {
   @GeneratedValue(generator = "organization_code")
   private val code: String = null
 
-  @Column(name = "", unique = true, nullable = false, updatable = false)
+  @Column(name = "name", unique = true, nullable = false, updatable = false)
   private var name: String = aName
+
+  @Column(name = "created_on")
+  private var createdOn: LocalDateTime = LocalDateTime.now
 
   override def toString: String = s"Org($code, $name)"
 
   def getCode: String = code
   def getName: String = name
   def setName(name: String): Unit = this.name = name
+  def getCreatedOn: LocalDateTime = createdOn
+  def setCreatedOn(createdOn: LocalDateTime): Unit = this.createdOn = createdOn
 }

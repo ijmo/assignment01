@@ -1,14 +1,12 @@
 package ijmo.kakaopay.financialassistance.user
 
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence._
-import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.{NotBlank, Size}
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.AuthorityUtils
-
-import scala.beans.BeanProperty
 
 object User {
   def apply(aUsername: String, aPassword: String): User = new User(aUsername, aPassword)
@@ -26,19 +24,19 @@ class User private (aUsername: String,
   private val id: Long = 0L
 
   @Column(name = "username", nullable = false, unique = true)
-  @NotEmpty
+  @Size(min = 4, max = 12)
   private var username: String = aUsername
 
   @Column(name = "password", nullable = false)
-  @NotEmpty
+  @NotBlank
   private var password: String = aPassword
 
-  @Column(name = "authorities")
+  @Column(name = "authorities", nullable = false)
   @JsonIgnore
   private var authorities: String = "ROLE_USER"
 
-  @Column(name = "created_on")
-  private var createdOn: ZonedDateTime = ZonedDateTime.now
+  @Column(name = "created_on", nullable = false)
+  private var createdOn: LocalDateTime = LocalDateTime.now
 
   override def toString: String = s"User($username)"
 
@@ -47,8 +45,8 @@ class User private (aUsername: String,
   def setUsername(username: String): Unit = this.username = username
   def getPassword: String = password
   def setPassword(password: String): Unit = this.password = password
-  def getCreatedOn: ZonedDateTime = createdOn
-  def setCreatedOn(createdOn: ZonedDateTime): Unit = this.createdOn = createdOn
+  def getCreatedOn: LocalDateTime = createdOn
+  def setCreatedOn(createdOn: LocalDateTime): Unit = this.createdOn = createdOn
 
   def getAuthorities: java.util.List[GrantedAuthority] = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities)
 

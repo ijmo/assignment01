@@ -1,10 +1,11 @@
 package ijmo.kakaopay.financialassistance.assistanceinfo
 
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 import ijmo.kakaopay.financialassistance.base.Numbers
 import ijmo.kakaopay.financialassistance.organization.Organization
 import javax.persistence._
+import org.springframework.data.annotation.CreatedDate
 
 import scala.collection.JavaConverters._
 import scala.util.matching.Regex
@@ -30,7 +31,7 @@ object AssistanceInfo {
       recommenders.asJava,
       management,
       reception,
-      ZonedDateTime.now())
+      LocalDateTime.now())
     assistanceInfo.setOrganization(organization)
     assistanceInfo.setRecommenders(recommenders.asJava)
     assistanceInfo
@@ -90,7 +91,7 @@ class AssistanceInfo private (aOrganization: Organization,
                               aRecommenders: java.util.List[Organization],
                               aManagement: String,
                               aReception: String,
-                              aModifiedOn: ZonedDateTime) {
+                              aModifiedOn: LocalDateTime) {
   def this() {
     this(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
   }
@@ -146,10 +147,11 @@ class AssistanceInfo private (aOrganization: Organization,
   private var reception: String = aReception
 
   @Column(name = "created_on")
-  private var createdOn: ZonedDateTime = ZonedDateTime.now
+  @CreatedDate
+  private var createdOn: LocalDateTime = LocalDateTime.now
 
   @Column(name = "modified_on")
-  private var modifiedOn: ZonedDateTime = aModifiedOn
+  private var modifiedOn: LocalDateTime = aModifiedOn
 
   override def toString: String =
     s"AssistanceInfo($organization, $target, $targetDistrictName, $targetDistrictCode, $longitude, $latitude, $usages, $maxAmount, $rate1, $rate2, ${recommenders.asScala.toList.toString}, $management, $reception)"
@@ -183,8 +185,8 @@ class AssistanceInfo private (aOrganization: Organization,
   def setManagement(management: String): Unit = this.management = management
   def getReception: String = reception
   def setReception(reception: String): Unit = this.reception = reception
-  def getCreatedOn: ZonedDateTime = createdOn
-  def setCreatedOn(createdOn: ZonedDateTime): Unit = this.createdOn = createdOn
-  def getModifiedOn: ZonedDateTime = modifiedOn
-  def setModifiedOn(modifiedOn: ZonedDateTime): Unit = this.modifiedOn = modifiedOn
+  def getCreatedOn: LocalDateTime = createdOn
+  def setCreatedOn(createdOn: LocalDateTime): Unit = this.createdOn = createdOn
+  def getModifiedOn: LocalDateTime = modifiedOn
+  def setModifiedOn(modifiedOn: LocalDateTime): Unit = this.modifiedOn = modifiedOn
 }
