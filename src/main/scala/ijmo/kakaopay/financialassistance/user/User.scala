@@ -23,28 +23,32 @@ class User private (aUsername: String,
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @BeanProperty
-  val id: Long = 0L
+  private val id: Long = 0L
 
   @Column(name = "username", nullable = false, unique = true)
-  @BeanProperty
   @NotEmpty
-  var username: String = aUsername
+  private var username: String = aUsername
 
   @Column(name = "password", nullable = false)
-  @BeanProperty
   @NotEmpty
-  var password: String = aPassword
+  private var password: String = aPassword
 
   @Column(name = "authorities")
   @JsonIgnore
-  var authorities: String = "ROLE_USER"
+  private var authorities: String = "ROLE_USER"
 
   @Column(name = "created_on")
-  @BeanProperty
-  var createdOn = ZonedDateTime.now
+  private var createdOn: ZonedDateTime = ZonedDateTime.now
 
   override def toString: String = s"User($username)"
+
+  def getId: Long = id
+  def getUsername: String = username
+  def setUsername(username: String): Unit = this.username = username
+  def getPassword: String = password
+  def setPassword(password: String): Unit = this.password = password
+  def getCreatedOn: ZonedDateTime = createdOn
+  def setCreatedOn(createdOn: ZonedDateTime): Unit = this.createdOn = createdOn
 
   def getAuthorities: java.util.List[GrantedAuthority] = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities)
 

@@ -25,6 +25,6 @@ class UserService (val userRepository: UserRepository) extends UserDetailsServic
   }
 
   def addUser(user: User): User = {
-    userRepository.save(User(user.username.trim.toLowerCase, passwordEncoder.encode(user.password)))
+    userRepository.save(User(user.getUsername.trim.toLowerCase, passwordEncoder.encode(user.getPassword)))
   }
 }
