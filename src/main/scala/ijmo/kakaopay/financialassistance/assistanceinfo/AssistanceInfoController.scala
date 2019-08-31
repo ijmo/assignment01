@@ -2,8 +2,7 @@ package ijmo.kakaopay.financialassistance.assistanceinfo
 
 import java.net.URI
 
-import ijmo.kakaopay.financialassistance.base.Numbers
-import ijmo.kakaopay.financialassistance.search.{SearchQueryDTO, SearchService}
+import ijmo.kakaopay.financialassistance.search.SearchQueryDTO
 import javax.validation.Valid
 import org.springframework.data.domain.{PageRequest, Pageable}
 import org.springframework.http.{HttpHeaders, HttpStatus, ResponseEntity}
@@ -15,8 +14,7 @@ import scala.collection.JavaConverters._
 
 @RestController
 @RequestMapping(Array("/api/assistanceinfo"))
-class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService,
-                                val searchService: SearchService) {
+class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService) {
   /**
     * (필수) 레코드 저장
     */
@@ -106,14 +104,8 @@ class AssistanceInfoController (val assistanceInfoService: AssistanceInfoService
       val msg = result.getAllErrors.asScala.map(_.getDefaultMessage).mkString(", ")
       return new ResponseEntity(msg, HttpStatus.BAD_REQUEST)
     }
-    val assistanceInfo = searchService.searchByText(query.getInput)
-    if (assistanceInfo == null) return new ResponseEntity(HttpStatus.NOT_FOUND)
-    val m: Map[String, String] = Map(
-      "region" -> assistanceInfo.getOrganization.getCode,
-      "usage" -> assistanceInfo.getUsages.split(",").mkString(" 및 "),
-      "limit" -> assistanceInfo.getMaxAmount,
-      "rate" -> Numbers.rates(assistanceInfo.getRate1, assistanceInfo.getRate2)
-    )
-    new ResponseEntity(m.asJava, HttpStatus.OK)
+    val recommended = assistanceInfoService.searchByText(query.getInput)
+    if (recommended.isEmpty) new ResponseEntity(recommended, HttpStatus.NOT_FOUND)
+    new ResponseEntity(recommended.get.asJava, HttpStatus.OK)
   }
 }

@@ -31,13 +31,14 @@ trait AssistanceInfoRepository extends JpaRepository[AssistanceInfo, java.lang.L
     , nativeQuery = true)
   def findOrganizationNamesWithMinimumRate: java.lang.Iterable[String]
 
-  @Query(value = "SELECT organization_code code, SQRT(POWER(longitude - :x, 2) + POWER(latitude - :y, 2)) distance " +
+  @Query(value = "SELECT organization_code code, usages, max_amount, rate1, rate2 " +
+                      ", SQRT(POWER(longitude - :x, 2) + POWER(latitude - :y, 2)) distance " +
                    "FROM assistance_info " +
                   "WHERE (longitude IS NOT NULL OR latitude IS NOT NULL) " +
                     "AND usages LIKE %:usages% " +
                     "AND max_amount_num >= :maxAmount " +
-                    "AND rate2 >= :rateLimit " +
+                    "AND rate2 >= :maxRate " +
                  " ORDER BY distance ASC LIMIT 1"
     , nativeQuery = true)
-  def findByXAndYAndUsagesAndMaxAmountAndRateLimit(x: Double, y: Double, usages: String, maxAmount: Long, rateLimit: Double): Array[Object]
+  def searchByLocationAndUsagesAndMaxAmountAndRate(x: Double, y: Double, usages: String, maxAmount: Long, maxRate: Double): java.util.List[Object] // Array[Object]
 }
