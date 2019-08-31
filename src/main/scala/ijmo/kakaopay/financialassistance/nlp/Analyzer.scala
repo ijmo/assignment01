@@ -10,6 +10,8 @@ object Analyzer {
 
   def parse(s: String): Iterable[Morpheme] = analyzer.parse(s).map(_.morpheme).map(m => Morpheme(m.getSurface, m.getFeatureHead))
 
+  def parseNounsOnly(s: String): List[String] = parse(s).filter(_.feature startsWith "N").map(_.surface).toList
+
   def addUserDictionary(s: String): Unit = {
     if (userDictionary.contains(s)) return
     userDictionary += s

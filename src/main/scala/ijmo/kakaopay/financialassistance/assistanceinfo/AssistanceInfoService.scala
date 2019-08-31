@@ -1,11 +1,11 @@
 package ijmo.kakaopay.financialassistance.assistanceinfo
 
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
+import ijmo.kakaopay.financialassistance.administrativedistrict.DistrictService
 import ijmo.kakaopay.financialassistance.base.Numbers
 import ijmo.kakaopay.financialassistance.nlp.Analyzer
 import ijmo.kakaopay.financialassistance.organization.{Organization, OrganizationService}
-import ijmo.kakaopay.financialassistance.search.SearchService
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
@@ -15,7 +15,7 @@ import scala.compat.java8.OptionConverters._
 @Service
 class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoRepository,
                              val organizationService: OrganizationService,
-                             val searchService: SearchService) {
+                             val districtService: DistrictService) {
 
   def findAll: Iterable[AssistanceInfo] = assistanceInfoRepository.findAll().asScala
 
@@ -30,9 +30,6 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
 
   def findOrganizationNamesWithMinimumRate: Iterable[String] =
     assistanceInfoRepository.findOrganizationNamesWithMinimumRate.asScala
-
-  def search: (Double, Double, String, Long, Double) => Array[Object] =
-    assistanceInfoRepository.findByXAndYAndUsagesAndMaxAmountAndRateLimit
 
   def addAssistanceInfo: AssistanceInfo => AssistanceInfo = assistanceInfoRepository.save
 
@@ -51,7 +48,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     Analyzer.addUserDictionary(organizationName)
     val organization: Organization = organizationService.findOrAddOrganization(organizationName)
     val recommenders = recommenderNames.split(",").toList.map(_.trim).map(s => organizationService.findOrAddOrganization(s))
-    val district = searchService.findDistricts(searchService.parse(target))
+    val district = districtService.findDistrictsIn(target)
     val districtName = if (district.isEmpty) null else district.min.name
     val districtCode = if (district.isEmpty) null else district.min.code
     val (longitude, latitude) = if (district.isEmpty) (null, null) else
@@ -90,7 +87,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
                            management: String, reception: String): AssistanceInfo = {
     val organization: Organization = organizationService.findOrAddOrganization(organizationName)
     val recommenders = recommenderNames.split(",").toList.map(_.trim).map(s => organizationService.findOrAddOrganization(s))
-    val district = searchService.findDistricts(searchService.parse(target))
+    val district = districtService.findDistrictsIn(target)
 
     val districtName = if (district.isEmpty) null else district.min.name
     val districtCode = if (district.isEmpty) null else district.min.code
@@ -114,8 +111,30 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     assistanceInfo.getRecommenders.addAll(recommenders.asJava)
     assistanceInfo.setManagement(management)
     assistanceInfo.setReception(reception)
-    assistanceInfo.setModifiedOn(ZonedDateTime.now())
+    assistanceInfo.setModifiedOn(LocalDateTime.now)
 
     assistanceInfoRepository.save(assistanceInfo)
+  }
+
+  def searchByText(text: String): Option[Map[String, Any]] = {
+    val maxAmount = Numbers.findFirst(text)
+    val maxAmountNum = maxAmount.getOrElse(0L)
+    val usages = AssistanceInfo.parseUsages(text)
+    val rates = AssistanceInfo.parseRates(text)
+    val districts = districtService.findDistrictsIn(text)
+
+    if (districts.isEmpty) return None
+
+    val district = districts.min
+    val result = assistanceInfoRepository.searchByLocationAndUsagesAndMaxAmountAndRate(district.location.x, district.location.y, usages, maxAmountNum, rates._2)
+    if (result.isEmpty) return None
+    val row = result.get(0).asInstanceOf[Array[Object]]
+
+    Some(Map(
+      "region" -> row(0),
+      "usage" -> row(1).toString.split(",").mkString(" 및 "),
+      "limit" -> row(2),
+      "rate" -> Numbers.rates(row(3).asInstanceOf[Double], row(4).asInstanceOf[Double])
+    ))
   }
 }
