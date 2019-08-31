@@ -8,6 +8,7 @@ import javax.persistence._
 
 import scala.collection.JavaConverters._
 import scala.util.matching.Regex
+
 object AssistanceInfo {
   def apply(organization: Organization, target: String, targetDistrictName: String, targetDistrictCode: String,
             longitude: String, latitude: String, usages: String, maxAmount: String, rate: String,

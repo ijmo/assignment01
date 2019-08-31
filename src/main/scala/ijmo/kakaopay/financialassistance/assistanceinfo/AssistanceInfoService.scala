@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 
 @Service
 class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoRepository,
@@ -17,17 +18,23 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
                              val searchService: SearchService) {
 
   def findAll: Iterable[AssistanceInfo] = assistanceInfoRepository.findAll().asScala
-  def findById(id: Long): Option[AssistanceInfo] = Some(assistanceInfoRepository.findById(id))
-  def findOrganizationNames(pageable: Pageable): Iterable[String] = assistanceInfoRepository.findOrganizationNames(pageable).getContent.asScala
-  def findOrganizationNamesWithMinimumRate: Iterable[String] = assistanceInfoRepository.findOrganizationNamesWithMinimumRate.asScala
-  def findByOrganizationName(organizationName: String): AssistanceInfo =
-    assistanceInfoRepository.findByOrganizationName(organizationName)
-  def findByOrganizationCode: String => AssistanceInfo = assistanceInfoRepository.findByOrganizationCode
-  def search: (Double, Double, String, Long, Double) => Array[Object] = assistanceInfoRepository.findByXAndYAndUsagesAndMaxAmountAndRateLimit
 
-  def addAssistanceInfo(assistanceInfo: AssistanceInfo): AssistanceInfo = {
-    assistanceInfoRepository.save(assistanceInfo)
-  }
+  def findById(id: Long): Option[AssistanceInfo] = assistanceInfoRepository.findById(id).asScala
+
+  def findByOrganizationName: String => AssistanceInfo = assistanceInfoRepository.findByOrganizationName
+
+  def findByOrganizationCode: String => AssistanceInfo = assistanceInfoRepository.findByOrganizationCode
+
+  def findOrganizationNames(pageable: Pageable): Iterable[String] =
+    assistanceInfoRepository.findOrganizationNamesOrderByMaxAmountNumDescAvgRateAsc(pageable).getContent.asScala
+
+  def findOrganizationNamesWithMinimumRate: Iterable[String] =
+    assistanceInfoRepository.findOrganizationNamesWithMinimumRate.asScala
+
+  def search: (Double, Double, String, Long, Double) => Array[Object] =
+    assistanceInfoRepository.findByXAndYAndUsagesAndMaxAmountAndRateLimit
+
+  def addAssistanceInfo: AssistanceInfo => AssistanceInfo = assistanceInfoRepository.save
 
   def addAssistanceInfo(assistanceInfoDTO: AssistanceInfoDTO): AssistanceInfo = addAssistanceInfo(
     assistanceInfoDTO.getRegion,
@@ -41,7 +48,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
 
   def addAssistanceInfo(organizationName: String, target: String, usages: String, maxAmount: String, rates: String,
                         recommenderNames: String, management: String, reception: String): AssistanceInfo = {
-    Analyzer.setUserDictionary(Iterator.single(organizationName))
+    Analyzer.addUserDictionary(organizationName)
     val organization: Organization = organizationService.findOrAddOrganization(organizationName)
     val recommenders = recommenderNames.split(",").toList.map(_.trim).map(s => organizationService.findOrAddOrganization(s))
     val district = searchService.findDistricts(searchService.parse(target))
@@ -49,10 +56,8 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     val districtCode = if (district.isEmpty) null else district.min.code
     val (longitude, latitude) = if (district.isEmpty) (null, null) else
       (district.min.location.x.toString, district.min.location.y.toString)
-    val maxAmountNum = Numbers.findFirst(maxAmount)
-    val (rate1, rate2) = AssistanceInfo.parseRates(rates)
 
-    assistanceInfoRepository.save(
+    addAssistanceInfo(
       AssistanceInfo(
         organization,
         target.trim,
