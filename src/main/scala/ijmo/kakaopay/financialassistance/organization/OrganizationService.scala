@@ -8,5 +8,5 @@ class OrganizationService (val organizationRepository: OrganizationRepository){
 
   def addOrganization(organization: Organization): Organization = organizationRepository.save(organization)
 
-  def findOrAddOrganization(name: String): Organization = findByName(name).getOrElse(addOrganization(new Organization(name)))
+  def findOrAddOrganization(name: String): Organization = findByName(name).getOrElse(addOrganization(Organization(name)))
 }

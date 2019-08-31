@@ -3,9 +3,15 @@ package ijmo.kakaopay.financialassistance.organization
 import javax.persistence._
 import org.hibernate.annotations.GenericGenerator
 
+object Organization {
+  def apply(name: String): Organization = {
+    new Organization(name)
+  }
+}
+
 @Entity
 @Table(name = "organization")
-case class Organization (aName: String) {
+class Organization (aName: String) {
   def this() {
     this(null)
   }
