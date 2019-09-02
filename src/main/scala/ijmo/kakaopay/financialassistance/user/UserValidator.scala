@@ -14,9 +14,11 @@ class UserValidator extends Validator {
       errors.rejectValue("username", "REQUIRED", "Username is required")
     }
 
-    if (username.length < 2 || username.length > 12) {
+    if (username.length < 4 || username.length > 12) {
       errors.rejectValue("username", "INVALID_LENGTH", "Username should be between 2 to 12")
     }
+
+    // TODO: specific username rule is required
 
     if (Option(password).forall(_.isEmpty)) {
       errors.rejectValue("password", "REQUIRED", "Password is required")
