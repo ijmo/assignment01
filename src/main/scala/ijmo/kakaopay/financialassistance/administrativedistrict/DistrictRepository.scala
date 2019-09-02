@@ -10,8 +10,8 @@ import scalaj.http.{Http, HttpResponse}
 import scala.collection.{immutable, parallel}
 
 object DistrictRepository {
-  private val ADMINISTRATIVE_DISTRICTS_WITH_LOCATION = "/dictionary/with_locations_2019_07.csv"
-  private val ADMINISTRATIVE_DISTRICTS = "/dictionary/administrative_district_2019_07.csv"
+  private val ADMINISTRATIVE_DISTRICTS_WITH_LOCATION = "./src/main/resources/dictionary/with_locations_2019_07.csv"
+  private val ADMINISTRATIVE_DISTRICTS = "./src/main/resources/dictionary/administrative_district_2019_07.csv"
 
   private lazy val districts: immutable.HashMap[String, List[District]] = loadDistricts(readCSV())
 
@@ -45,14 +45,14 @@ object DistrictRepository {
   }
 
   private def readCSV(): List[List[String]] = {
-    val locFile = new File(getClass.getResource(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION).getFile)
-    lazy val baseFile = new File(getClass.getResource(ADMINISTRATIVE_DISTRICTS).getFile)
+    val locFile = new File(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION)
+    lazy val baseFile = new File(ADMINISTRATIVE_DISTRICTS)
 
     CsvUtil.readAll(if (locFile.isFile) locFile else baseFile, "utf-8")
   }
 
   private def writeCSV(rows: List[List[String]]): Unit = {
-    val outFile = new File(getClass.getResource(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION).getFile)
+    val outFile = new File(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION)
     CsvUtil.write(rows, outFile)
   }
 
