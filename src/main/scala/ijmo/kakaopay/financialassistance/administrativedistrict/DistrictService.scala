@@ -41,4 +41,10 @@ class DistrictService {
       case _ => districts
     }
   }
+
+  def findDistrictNameCodeLocation(text: String): (String, String, Option[Double], Option[Double]) = {
+    val districts = findDistrictsIn(text)
+    val district = if (districts.nonEmpty) districts.min else return (null, null, None, None)
+    (district.name, district.code, Option(district.location.x), Option(district.location.y))
+  }
 }
