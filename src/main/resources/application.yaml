@@ -5,3 +5,5 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
       - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
+  jackson:
+    time-zone: Asia/Seoul
