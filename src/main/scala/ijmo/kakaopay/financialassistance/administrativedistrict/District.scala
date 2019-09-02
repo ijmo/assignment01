@@ -8,12 +8,12 @@ import scala.util.matching.Regex
 trait AdministrativeDistrict
 
 object District extends AdministrativeDistrict {
-  private def getFullname(d: District): String = {
+  def getFullname(d: District): String = {
     if (d.parent == null) return d.name
     getFullname(d.parent) + " " + d.name
   }
 
-  private def asList(d: District): List[String] = {
+  def asList(d: District): List[String] = {
     if (d == null) return Nil
     asList(d.parent) ++ List(d.code, d.name)
   }
@@ -92,5 +92,5 @@ case class District(code: String, name: String, placeName: String, areaUnit: Str
     true
   }
 
-  override def compare(that: District): Int = code.padTo(7, '0') compare that.code.padTo(7, '0')
+  override def compare(that: District): Int = code.toInt compare that.code.toInt
 }
