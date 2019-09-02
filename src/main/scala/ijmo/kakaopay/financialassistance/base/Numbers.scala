@@ -18,9 +18,9 @@ object Numbers {
     case None => None
   }
 
-  def rates(d1: java.lang.Double, d2: java.lang.Double): String = {
+  def rates(d1: Double, d2: Double): String = {
     if (d1 == 100) return "대출이자 전액"
-    if (d1 == d2) return d1 + "%"
-    d1 + "% ~ " + d2 + "%"
+    if (d1 == d2) return s"$d1%"
+    s"$d1% ~ $d2%"
   }
 }

@@ -12,7 +12,7 @@ object AssistanceInfoDTO {
       info.getTarget,
       info.getUsages.split(",").mkString(" 및 "),
       info.getMaxAmount,
-      Numbers.rates(info.getRate1, info.getRate2),
+      Numbers.rates(info.getRate1.get, info.getRate2.get),
       info.getRecommenders.asScala.map(_.getName).mkString(", "),
       info.getManagement,
       info.getReception)

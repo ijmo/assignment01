@@ -47,12 +47,9 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
                         recommenderNames: String, management: String, reception: String): AssistanceInfo = {
     Analyzer.addUserDictionary(organizationName)
     val organization: Organization = organizationService.findOrAddOrganization(organizationName)
-    val recommenders = recommenderNames.split(",").toList.map(_.trim).map(s => organizationService.findOrAddOrganization(s))
-    val district = districtService.findDistrictsIn(target)
-    val districtName = if (district.isEmpty) null else district.min.name
-    val districtCode = if (district.isEmpty) null else district.min.code
-    val (longitude, latitude) = if (district.isEmpty) (null, null) else
-      (district.min.location.x.toString, district.min.location.y.toString)
+    val recommenders = recommenderNames.split(",").toList.map(_.trim).map(s =>
+      organizationService.findOrAddOrganization(s))
+    val (districtName, districtCode, longitude, latitude) = districtService.findDistrictNameCodeLocation(target)
 
     addAssistanceInfo(
       AssistanceInfo(
@@ -85,14 +82,10 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
   def updateAssistanceInfo(assistanceInfo: AssistanceInfo, organizationName: String, target: String,
                            usage: String, maxAmount: String, rate: String, recommenderNames: String,
                            management: String, reception: String): AssistanceInfo = {
+    Analyzer.addUserDictionary(organizationName)
     val organization: Organization = organizationService.findOrAddOrganization(organizationName)
     val recommenders = recommenderNames.split(",").toList.map(_.trim).map(s => organizationService.findOrAddOrganization(s))
-    val district = districtService.findDistrictsIn(target)
-
-    val districtName = if (district.isEmpty) null else district.min.name
-    val districtCode = if (district.isEmpty) null else district.min.code
-    val (longitude, latitude) = if (district.isEmpty) (null, null) else
-      (district.min.location.x.toString, district.min.location.y.toString)
+    val (districtName, districtCode, longitude, latitude) = districtService.findDistrictNameCodeLocation(target)
     val maxAmountNum = Numbers.findFirst(maxAmount)
     val rates = AssistanceInfo.parseRates(rate)
 
@@ -104,7 +97,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     assistanceInfo.setLatitude(latitude)
     assistanceInfo.setUsages(AssistanceInfo.parseUsages(usage))
     assistanceInfo.setMaxAmount(maxAmount)
-    assistanceInfo.setMaxAmountNum(if (maxAmountNum.isDefined) maxAmountNum.get else Long.MaxValue)
+    assistanceInfo.setMaxAmountNum(maxAmountNum)
     assistanceInfo.setRate1(rates._1)
     assistanceInfo.setRate2(rates._2)
     assistanceInfo.getRecommenders.clear()
@@ -126,7 +119,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
     if (districts.isEmpty) return None
 
     val district = districts.min
-    val result = assistanceInfoRepository.searchByLocationAndUsagesAndMaxAmountAndRate(district.location.x, district.location.y, usages, maxAmountNum, rates._2)
+    val result = assistanceInfoRepository.searchByLocationAndUsagesAndMaxAmountAndRate(district.location.x, district.location.y, usages, maxAmountNum, rates._2.get)
     if (result.isEmpty) return None
     val row = result.get(0).asInstanceOf[Array[Object]]
 
