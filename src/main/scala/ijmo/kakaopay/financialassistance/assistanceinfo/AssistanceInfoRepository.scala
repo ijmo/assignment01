@@ -17,17 +17,17 @@ trait AssistanceInfoRepository extends JpaRepository[AssistanceInfo, java.lang.L
   @EntityGraph(attributePaths = Array("organization", "recommenders"))
   def findByOrganizationCode(organizationCode: String): AssistanceInfo
 
-  @Query(value = "SELECT name " +
-                   "FROM (SELECT o.name, ai.max_amount_num, (rate1 + rate2)/2.0 AS avg_rate " +
-                           "FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code) " +
-                  "ORDER BY (CASE WHEN max_amount_num >= 9223372036854775807 THEN 0 ELSE max_amount_num END) DESC, avg_rate ASC"
+  @Query(value = "SELECT o.name " +
+                   "FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code " +
+                  "ORDER BY (CASE WHEN max_amount_num >= 9223372036854775807 THEN 0 ELSE max_amount_num END) DESC, " +
+                           "(rate1 + rate2)/2.0 ASC"
     , countQuery = "SELECT COUNT(*) FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code"
     , nativeQuery = true)
   def findOrganizationNamesOrderByMaxAmountNumDescAvgRateAsc(pageable: Pageable): Page[String]
 
-  @Query(value = "SELECT o.name FROM (SELECT organization_code code, rate1 rate " +
-                                       "FROM assistance_info ORDER BY rate1 ASC LIMIT 1) ai " +
-             "INNER JOIN organization o ON ai.code = o.code"
+  @Query(value = "SELECT o.name " +
+                   "FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code " +
+               "ORDER BY rate1 ASC LIMIT 1 "
     , nativeQuery = true)
   def findOrganizationNamesWithMinimumRate: java.lang.Iterable[String]
 
