@@ -21,8 +21,8 @@ class AssistanceInfoTest extends BaseSpec {
     }
     scenario("Parse rates from string - case 4") {
       val (d1, d2) = AssistanceInfo.parseRates("a1.0zz")
-      d1.get shouldBe 100.0
-      d2.get shouldBe 100.0
+      d1 shouldBe None
+      d2 shouldBe None
     }
   }
 }

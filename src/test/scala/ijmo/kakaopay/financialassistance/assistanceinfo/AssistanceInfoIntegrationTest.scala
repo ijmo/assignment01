@@ -44,54 +44,56 @@ class AssistanceInfoIntegrationTest extends BaseSpec with IntegrationSpec {
     token = getAccessToken(testUser)
   }
 
+  // TODO: Spring security oauth2 테스트를 위해 참고하기 (https://stackoverflow.com/questions/29510759/how-to-test-spring-security-oauth2-resource-server-security)
+
   feature("AssistanceInfoController") {
+    val dto1: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0001
+      "강릉시",
+      "강릉시 소재 중소기업으로서 강릉시장이 추천한 자",
+      "운전",
+      "1백만",
+      "1%~2%",
+      "강릉시",
+      "강릉지점",
+      "강릉시 소재 영업점")
+    val dto2: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0002
+      "경주시",
+      "경주시 소재 중소기업으로서 경주시장이 추천한 자",
+      "운전",
+      "추천금액 이내",
+      "3%",
+      "경주시",
+      "경주지점",
+      "경주시 소재 영업점")
+    val dto3: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0003
+      "서울시",
+      "서울시 소재 중소기업으로서 강릉시장이 추천한 자",
+      "운전 및 시설",
+      "3백만",
+      "4%~5%",
+      "서울시",
+      "강릉지점",
+      "강릉시 소재 영업점")
+    val dto4: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0004
+      "부산시",
+      "부산시 소재 중소기업으로서 강릉시장이 추천한 자",
+      "운전 및 시설",
+      "4백만",
+      "6%",
+      "부산시",
+      "강릉지점",
+      "강릉시 소재 영업점")
+    val dto5: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0005
+      "제주시",
+      "제주시 소재 중소기업으로서 강릉시장이 추천한 자",
+      "운전 및 시설",
+      "5백만",
+      "7~8%",
+      "제주시",
+      "제주시지점",
+      "제주시 소재 영업점")
 
     scenario("Create AssistanceInfo") {
-      val dto1: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0001
-        "강릉시",
-        "강릉시 소재 중소기업으로서 강릉시장이 추천한 자",
-        "운전",
-        "1백만",
-        "1%~2%",
-        "강릉시",
-        "강릉지점",
-        "강릉시 소재 영업점")
-      val dto2: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0002
-        "경주시",
-        "경주시 소재 중소기업으로서 경주시장이 추천한 자",
-        "운전",
-        "추천금액 이내",
-        "3%",
-        "경주시",
-        "경주지점",
-        "경주시 소재 영업점")
-      val dto3: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0003
-        "서울시",
-        "서울시 소재 중소기업으로서 강릉시장이 추천한 자",
-        "운전 및 시설",
-        "3백만",
-        "4%~5%",
-        "서울시",
-        "강릉지점",
-        "강릉시 소재 영업점")
-      val dto4: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0004
-        "부산시",
-        "부산시 소재 중소기업으로서 강릉시장이 추천한 자",
-        "운전 및 시설",
-        "4백만",
-        "6%",
-        "부산시",
-        "강릉지점",
-        "강릉시 소재 영업점")
-      val dto5: AssistanceInfoDTO = new AssistanceInfoDTO( // reg0005
-        "제주시",
-        "제주시 소재 중소기업으로서 강릉시장이 추천한 자",
-        "운전 및 시설",
-        "5백만",
-        "7~8%",
-        "제주시",
-        "제주시지점",
-        "제주시 소재 영업점")
       testRestTemplate.postForEntity(path(), createHttpEntityJWT(dto1, token), classOf[Any]).getStatusCode shouldBe HttpStatus.CREATED
       testRestTemplate.postForEntity(path(), createHttpEntityJWT(dto2, token), classOf[Any]).getStatusCode shouldBe HttpStatus.CREATED
       testRestTemplate.postForEntity(path(), createHttpEntityJWT(dto3, token), classOf[Any]).getStatusCode shouldBe HttpStatus.CREATED
@@ -104,6 +106,22 @@ class AssistanceInfoIntegrationTest extends BaseSpec with IntegrationSpec {
       val response = testRestTemplate.exchange(path(), HttpMethod.GET, createHttpEntityJWT("", token), classOf[Array[AssistanceInfoDTO]])
       response.getBody.length shouldBe 5
       response.getStatusCode shouldBe HttpStatus.OK
+    }
+
+
+    scenario("Find by organization name") {
+      val dto: AssistanceInfoDTO = new AssistanceInfoDTO()
+      dto.setRegion("강릉시")
+      val response = testRestTemplate.exchange(path("/match"), HttpMethod.POST, createHttpEntityJWT(dto, token), classOf[AssistanceInfoDTO])
+      response.getStatusCode shouldBe HttpStatus.OK
+      response.getBody.getRegion shouldBe "강릉시"
+      response.getBody.getTarget shouldBe "강릉시 소재 중소기업으로서 강릉시장이 추천한 자"
+      response.getBody.getUsage shouldBe "운전"
+      response.getBody.getLimit shouldBe "1백만"
+      response.getBody.getRate shouldBe "1.0% ~ 2.0%"
+      response.getBody.getInstitute shouldBe "강릉시"
+      response.getBody.getMgmt shouldBe "강릉지점"
+      response.getBody.getReception shouldBe "강릉시 소재 영업점"
     }
 
 
@@ -121,7 +139,7 @@ class AssistanceInfoIntegrationTest extends BaseSpec with IntegrationSpec {
         "강릉시 소재 영업점")
 
       When(s"Http put request to ${path("/1")} is sent")
-      testRestTemplate.exchange(path("/1"), HttpMethod.PUT, createHttpEntityJWT(dto1, token), classOf[Any]).getStatusCode shouldBe HttpStatus.ACCEPTED
+      testRestTemplate.exchange(path("/1"), HttpMethod.PUT, createHttpEntityJWT(dto1, token), classOf[Any]).getStatusCode shouldBe HttpStatus.OK
 
       Then("Get response with updated data")
       val param = new AssistanceInfoDTO(newRegion, null, null, null, null, null, null, null)
@@ -141,9 +159,9 @@ class AssistanceInfoIntegrationTest extends BaseSpec with IntegrationSpec {
       Then("Get response with sorted data")
       response.getBody.length shouldBe limit
       val l = response.getBody.toList
-      l.head should (be ("경주시") or be ("공룡시"))
-      l(1) should (be ("경주시") or be ("공룡시"))
-      l(2) shouldBe "제주시"
+      l.head shouldBe "제주시"
+      l(1) shouldBe "부산시"
+      l(2) shouldBe "서울시"
     }
 
 
