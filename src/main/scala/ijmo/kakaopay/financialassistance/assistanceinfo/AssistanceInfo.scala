@@ -33,8 +33,6 @@ object AssistanceInfo {
       management,
       reception,
       LocalDateTime.now())
-    assistanceInfo.setOrganization(organization)
-    assistanceInfo.setRecommenders(recommenders.asJava)
     assistanceInfo
   }
 
