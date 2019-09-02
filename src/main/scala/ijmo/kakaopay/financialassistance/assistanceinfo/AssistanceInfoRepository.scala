@@ -20,7 +20,7 @@ trait AssistanceInfoRepository extends JpaRepository[AssistanceInfo, java.lang.L
   @Query(value = "SELECT name " +
                    "FROM (SELECT o.name, ai.max_amount_num, (rate1 + rate2)/2.0 AS avg_rate " +
                            "FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code) " +
-                  "ORDER BY (CASE WHEN max_amount_num >= 9000000000000000000 THEN 0 ELSE max_amount_num END) DESC, avg_rate ASC"
+                  "ORDER BY (CASE WHEN max_amount_num >= 9223372036854775807 THEN 0 ELSE max_amount_num END) DESC, avg_rate ASC"
     , countQuery = "SELECT COUNT(*) FROM assistance_info ai INNER JOIN organization o ON ai.organization_code = o.code"
     , nativeQuery = true)
   def findOrganizationNamesOrderByMaxAmountNumDescAvgRateAsc(pageable: Pageable): Page[String]
@@ -40,5 +40,5 @@ trait AssistanceInfoRepository extends JpaRepository[AssistanceInfo, java.lang.L
                     "AND rate2 >= :maxRate " +
                  " ORDER BY distance ASC LIMIT 1"
     , nativeQuery = true)
-  def searchByLocationAndUsagesAndMaxAmountAndRate(x: Double, y: Double, usages: String, maxAmount: Long, maxRate: Double): java.util.List[Object] // Array[Object]
+  def searchByLocationAndUsagesAndMaxAmountAndRate(x: Double, y: Double, usages: String, maxAmount: Long, maxRate: Double): java.util.List[Object]
 }
