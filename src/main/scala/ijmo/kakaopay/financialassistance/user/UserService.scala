@@ -1,15 +1,13 @@
 package ijmo.kakaopay.financialassistance.user
 
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
 import org.springframework.security.core.userdetails.{UserDetails, UserDetailsService}
+import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserService (val userRepository: UserRepository) extends UserDetailsService {
-
-  @Autowired
-  var passwordEncoder: PasswordEncoder = _
 
   override def loadUserByUsername(username: String): UserDetails = {
     findByUsername(username).map(u => new UserPrincipal(u)).orNull
@@ -27,4 +25,7 @@ class UserService (val userRepository: UserRepository) extends UserDetailsServic
   def addUser(user: User): User = {
     userRepository.save(User(user.getUsername.trim.toLowerCase, passwordEncoder.encode(user.getPassword)))
   }
+
+  @Bean
+  def passwordEncoder: PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 }

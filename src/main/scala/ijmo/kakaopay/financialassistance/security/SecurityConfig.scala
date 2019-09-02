@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.configuration.{EnableWebSecurity, WebSecurityConfigurerAdapter}
-import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 
 object SecurityConfig {
@@ -20,21 +19,20 @@ object SecurityConfig {
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig (val userService: UserService) extends WebSecurityConfigurerAdapter {
+class SecurityConfig (val userService: UserService,
+                      val passwordEncoder: PasswordEncoder) extends WebSecurityConfigurerAdapter {
   @Bean
   override def authenticationManagerBean(): AuthenticationManager = super.authenticationManagerBean()
 
   override protected def configure(auth: AuthenticationManagerBuilder): Unit =
     auth.authenticationProvider(authenticationProvider())
 
-  @Bean
-  def passwordEncoder(): PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
   @Bean
   def authenticationProvider(): DaoAuthenticationProvider = {
     val authProvider: DaoAuthenticationProvider = new DaoAuthenticationProvider()
     authProvider.setUserDetailsService(userService)
-    authProvider.setPasswordEncoder(passwordEncoder())
+    authProvider.setPasswordEncoder(passwordEncoder)
     authProvider
   }
 }
