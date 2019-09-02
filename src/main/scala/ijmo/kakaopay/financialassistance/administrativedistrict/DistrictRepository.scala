@@ -10,8 +10,9 @@ import scalaj.http.{Http, HttpResponse}
 import scala.collection.{immutable, parallel}
 
 object DistrictRepository {
-  private val ADMINISTRATIVE_DISTRICTS_WITH_LOCATION = "dictionary/with_locations_2019_07.csv"
-  private val ADMINISTRATIVE_DISTRICTS = "dictionary/administrative_district_2019_07.csv"
+  private val ADMINISTRATIVE_DISTRICTS_WITH_LOCATION = "/dictionary/with_locations_2019_07.csv"
+  private val ADMINISTRATIVE_DISTRICTS = "/dictionary/administrative_district_2019_07.csv"
+
   private lazy val districts: immutable.HashMap[String, List[District]] = loadDistricts(readCSV())
 
   private def getLocationFromKakao(d: District): District = {
@@ -44,18 +45,18 @@ object DistrictRepository {
   }
 
   private def readCSV(): List[List[String]] = {
-    val locFile = new File(ClassLoader.getSystemResource(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION).getFile)
-    lazy val baseFile = new File(ClassLoader.getSystemResource(ADMINISTRATIVE_DISTRICTS).getFile)
+    val locFile = new File(getClass.getResource(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION).getFile)
+    lazy val baseFile = new File(getClass.getResource(ADMINISTRATIVE_DISTRICTS).getFile)
 
     CsvUtil.readAll(if (locFile.isFile) locFile else baseFile, "utf-8")
   }
 
   private def writeCSV(rows: List[List[String]]): Unit = {
-    val outFile = new File(ClassLoader.getSystemResource(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION).getFile)
+    val outFile = new File(getClass.getResource(ADMINISTRATIVE_DISTRICTS_WITH_LOCATION).getFile)
     CsvUtil.write(rows, outFile)
   }
 
-  private def mapByName(districts: List[District]): immutable.HashMap[String, List[District]] = {
+  private def mapByPlaceName(districts: List[District]): immutable.HashMap[String, List[District]] = {
     districts.foldLeft(immutable.HashMap[String, immutable.List[District]]()) ((m, district) => {
       if (m.contains(district.placeName)) {
         if (m(district.placeName).exists(_.hasSamePlaceNameWith(district))) m
@@ -82,7 +83,7 @@ object DistrictRepository {
 
     val districtsWithLocation = if (districts.exists(_.location == null)) pmapDistricts(getLocationFromKakao, districts) else districts
     writeCSV(districtsWithLocation.map(districtToStrings))
-    mapByName(districtsWithLocation)
+    mapByPlaceName(districtsWithLocation)
   }
 
   def getPlaceNameDistrictMap: immutable.HashMap[String, List[District]] = districts
