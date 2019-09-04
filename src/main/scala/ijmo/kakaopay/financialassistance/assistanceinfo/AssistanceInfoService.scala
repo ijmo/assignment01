@@ -8,6 +8,7 @@ import ijmo.kakaopay.financialassistance.nlp.Analyzer
 import ijmo.kakaopay.financialassistance.organization.{Organization, OrganizationService}
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
@@ -79,6 +80,7 @@ class AssistanceInfoService (val assistanceInfoRepository: AssistanceInfoReposit
       assistanceInfoDTO.getMgmt,
       assistanceInfoDTO.getReception)
 
+  @Transactional
   def updateAssistanceInfo(assistanceInfo: AssistanceInfo, organizationName: String, target: String,
                            usage: String, maxAmount: String, rate: String, recommenderNames: String,
                            management: String, reception: String): AssistanceInfo = {
