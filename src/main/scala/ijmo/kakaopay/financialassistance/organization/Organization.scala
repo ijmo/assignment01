@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 
 import javax.persistence._
 import org.hibernate.annotations.GenericGenerator
+import org.springframework.data.annotation.CreatedDate
 
 object Organization {
   def apply(name: String): Organization = {
@@ -27,6 +28,7 @@ class Organization (aName: String) {
   private var name: String = aName
 
   @Column(name = "created_on")
+  @CreatedDate
   private var createdOn: LocalDateTime = LocalDateTime.now
 
   override def toString: String = s"Org($code, $name)"

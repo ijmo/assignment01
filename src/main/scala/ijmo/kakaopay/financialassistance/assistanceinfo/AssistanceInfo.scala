@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 import ijmo.kakaopay.financialassistance.base.Numbers
 import ijmo.kakaopay.financialassistance.organization.Organization
 import javax.persistence._
-import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.{CreatedDate, LastModifiedDate}
 
 import scala.collection.JavaConverters._
 import scala.util.matching.Regex
@@ -150,6 +150,7 @@ class AssistanceInfo private (aOrganization: Organization,
   private var createdOn: LocalDateTime = LocalDateTime.now
 
   @Column(name = "modified_on")
+  @LastModifiedDate
   private var modifiedOn: LocalDateTime = aModifiedOn
 
   override def toString: String =

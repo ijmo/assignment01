@@ -5,6 +5,7 @@ import java.time.LocalDateTime
 import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence._
 import javax.validation.constraints.{NotBlank, Size}
+import org.springframework.data.annotation.CreatedDate
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.AuthorityUtils
 
@@ -36,6 +37,7 @@ class User private (aUsername: String,
   private var authorities: String = "ROLE_USER"
 
   @Column(name = "created_on", nullable = false)
+  @CreatedDate
   private var createdOn: LocalDateTime = LocalDateTime.now
 
   override def toString: String = s"User($username)"
