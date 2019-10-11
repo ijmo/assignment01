@@ -99,7 +99,7 @@ class AssistanceInfo private (aOrganization: Organization,
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private val id: Long = 0L
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "organization_code")
   private var organization: Organization = aOrganization
 
@@ -133,11 +133,8 @@ class AssistanceInfo private (aOrganization: Organization,
   @Column(name = "rate2", nullable = false)
   private var rate2: java.lang.Double = rateAsJava(aRate2)
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "assistance_info_organization_recommender"
-    , joinColumns = Array(new JoinColumn(name = "assistance_info_id"))
-    , inverseJoinColumns = Array(new JoinColumn(name = "organization_code")))
-  private var recommenders: java.util.List[Organization] = aRecommenders
+  @OneToMany(mappedBy = "assistanceInfo", fetch = FetchType.LAZY, cascade = Array(CascadeType.PERSIST))
+  private var recommenders: java.util.List[AssistanceInfoOrganization] = getRecommendersInternal(aRecommenders)
 
   @Column(name = "management", nullable = false)
   private var management: String = aManagement
@@ -190,8 +187,16 @@ class AssistanceInfo private (aOrganization: Organization,
   def getRate2: Option[Double] = Option(rate2)
   def setRate2(rate: Option[Double]): Unit = this.rate2 = rateAsJava(rate)
 
-  def getRecommenders: java.util.List[Organization] = recommenders
-  def setRecommenders(recommenders: java.util.List[Organization]): Unit = this.recommenders = recommenders
+  def getRecommenders: java.util.List[Organization] = recommenders.asScala.map(_.getOrganization).asJava
+  private def getRecommendersInternal(recommenders: java.util.List[Organization]): java.util.List[AssistanceInfoOrganization] = {
+    if (recommenders == null) {
+      return new java.util.ArrayList()
+    }
+    recommenders.asScala.map(r => AssistanceInfoOrganization(this, r)).asJava
+  }
+  def setRecommenders(recommenders: java.util.List[Organization]): Unit = {
+    this.recommenders = getRecommendersInternal(recommenders)
+  }
 
   def getManagement: String = management
   def setManagement(management: String): Unit = this.management = management
